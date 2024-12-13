@@ -1,9 +1,17 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:17.2-alpine
+    container_name: postgres
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - "POSTGRES_USER: user"
+      - "POSTGRES_PASSWORD: password"
     ports:
-      - '5432'
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - "80:80"
