@@ -1,17 +1,18 @@
 services:
   postgres:
     image: postgres:17.2-alpine
-    container_name: postgres
+    container_name: postgresdb
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: username
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: apartments-app
     ports:
       - "5432:5432"
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@domain-name.com
+      PGADMIN_DEFAULT_EMAIL: admin@domain.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - "80:80"
