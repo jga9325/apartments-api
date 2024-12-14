@@ -7,3 +7,6 @@ spring:
       username: username
       password: "password"
       pool-size: 30
+  sql:
+    init:
+      mode: always
