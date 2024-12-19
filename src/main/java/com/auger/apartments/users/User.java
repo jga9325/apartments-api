@@ -20,7 +20,7 @@ public record User(int id, String name, String email, String phoneNumber, LocalD
             throw new IllegalArgumentException("Age limit exceeded");
         }
         if (birthDate.isAfter(latestDate)) {
-            throw new IllegalArgumentException("Must be 18 years of age");
+            throw new IllegalArgumentException("Must be at least 18 years of age");
         }
     }
 }
