@@ -12,9 +12,9 @@ public class UserRepositoryImpl implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper userRowMapper;
 
-    public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userRowMapper = new UserRowMapper();
+        this.userRowMapper = userRowMapper;
     }
 
     @Override

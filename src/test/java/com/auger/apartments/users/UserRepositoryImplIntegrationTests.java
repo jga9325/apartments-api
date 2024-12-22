@@ -1,6 +1,5 @@
 package com.auger.apartments.users;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,50 +33,49 @@ public class UserRepositoryImplIntegrationTests {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    public void addUsers() {
-        // TODO
-    }
+    @Autowired
+    UserRowMapper userRowMapper;
 
-    @AfterEach
+    @BeforeEach
     public void clearTable() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test
-    public void testCreateAndFindAllAndFindOne() {
+    public void testCreate() {
+        assertThat(getRowCount()).isEqualTo(0);
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
         int rowsAffected = underTest.create(user);
         assertThat(rowsAffected).isEqualTo(1);
-        List<User> result = underTest.findAll();
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(getRowCount()).isEqualTo(1);
 
-        User createdUser = result.get(0);
-        assertThat(createdUser.name()).isEqualTo("John");
-        assertThat(createdUser.email()).isEqualTo("john@gmail.com");
-        assertThat(createdUser.phoneNumber()).isEqualTo("1234567894");
-        assertThat(createdUser.birthDate()).isEqualTo(LocalDate.of(1999, 4, 28));
-        assertThat(createdUser.dateJoined()).isEqualTo(LocalDate.now());
-
-        int userId = createdUser.id();
-        Optional<User> optionalUser = underTest.findOne(userId);
+        Optional<User> optionalUser = jdbcTemplate.query(
+                "SELECT * FROM users WHERE email = ? LIMIT 1",
+                userRowMapper, "john@gmail.com").stream().findFirst();
         assertThat(optionalUser.isPresent()).isTrue();
-        User existingUser = optionalUser.get();
-        assertThat(existingUser.name()).isEqualTo("John");
-        assertThat(existingUser.email()).isEqualTo("john@gmail.com");
-        assertThat(existingUser.phoneNumber()).isEqualTo("1234567894");
-        assertThat(existingUser.birthDate()).isEqualTo(LocalDate.of(1999, 4, 28));
-        assertThat(existingUser.dateJoined()).isEqualTo(LocalDate.now());
+        User createdUser = optionalUser.get();
+        assertUsersAreEqual(user, createdUser);
     }
 
     @Test
     public void testCreateDuplicateUser() {
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        int rowsAffected = underTest.create(user);
-        assertThat(rowsAffected).isEqualTo(1);
+        underTest.create(user);
         assertThatThrownBy(() -> underTest.create(user)).isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    public void testFindOne() {
+        User user = new User(0, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+        underTest.create(user);
+        int userId = jdbcTemplate.queryForObject("SELECT id FROM users WHERE email = ?", Integer.class, "john@gmail.com");
+        Optional<User> optionalUser = underTest.findOne(userId);
+        assertThat(optionalUser.isPresent()).isTrue();
+        User createdUser = optionalUser.get();
+        assertUsersAreEqual(user, createdUser);
     }
 
     @Test
@@ -87,7 +85,42 @@ public class UserRepositoryImplIntegrationTests {
     }
 
     @Test
-    public void testFindAllWithMultipleUsers() {
-        // TODO
+    public void testFindAll() {
+        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Jennifer", "jennifer@gmail.com", "9876543214",
+                LocalDate.of(1975, 8, 3), LocalDate.now());
+        User user3 = new User(0, "Bob", "Bob@gmail.com", "7365490142",
+                LocalDate.of(2001, 12, 19), LocalDate.now());
+        assertThat(getRowCount()).isEqualTo(0);
+        assertThat(underTest.findAll().size()).isEqualTo(0);
+        underTest.create(user1);
+        underTest.create(user2);
+        underTest.create(user3);
+        assertThat(getRowCount()).isEqualTo(3);
+        assertThat(underTest.findAll().size()).isEqualTo(3);
+    }
+
+    // Modify - Create a user, call modify to change the email and phoneNumber
+    // Check that there is only 1 object, get it, and verify info
+
+    // Modify - Call with invalid id and test for exception or rows returned
+
+    // Delete - Create a user, delete it, and check that it isn't there
+
+    // Delete - Delete invalid id and verify exception
+
+    // Exists - Create user, call exists with valid and invalid id and check boolean value
+
+    private int getRowCount() {
+        return JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+    }
+
+    private void assertUsersAreEqual(User u1, User u2) {
+        assertThat(u1.name()).isEqualTo(u2.name());
+        assertThat(u1.email()).isEqualTo(u2.email());
+        assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
+        assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
+        assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
     }
 }
