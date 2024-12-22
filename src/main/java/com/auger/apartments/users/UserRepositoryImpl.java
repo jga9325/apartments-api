@@ -23,8 +23,10 @@ public class UserRepositoryImpl implements UserRepository {
                 INSERT INTO users (name, email, phone_number, birth_date, date_joined)
                 VALUES (?, ?, ?, ?, ?);
                 """;
-        return jdbcTemplate.update(sql, user.name(), user.email(), user.phoneNumber(),
-                user.birthDate(), user.dateJoined());
+        return jdbcTemplate.update(
+                sql,
+                user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.dateJoined()
+        );
     }
 
     @Override
@@ -35,7 +37,9 @@ public class UserRepositoryImpl implements UserRepository {
                 WHERE id = ?
                 LIMIT 1;
                 """;
-        return jdbcTemplate.query(sql, userRowMapper, id).stream().findFirst();
+        return jdbcTemplate.query(sql, userRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     @Override
@@ -45,5 +49,28 @@ public class UserRepositoryImpl implements UserRepository {
                 FROM users;
                 """;
         return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    @Override
+    public int update(User user) {
+        String sql = """
+                UPDATE users
+                SET name = ?, email = ?, phone_number = ?, birth_date = ?
+                WHERE id = ?;
+                """;
+        return jdbcTemplate.update(
+                sql,
+                user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.id()
+        );
+    }
+
+    @Override
+    public boolean exists(int id) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM users
+                WHERE id = ?;
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }

@@ -13,7 +13,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -43,7 +42,6 @@ public class UserRepositoryImplIntegrationTests {
 
     @Test
     public void testCreate() {
-        assertThat(getRowCount()).isEqualTo(0);
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
         int rowsAffected = underTest.create(user);
@@ -53,7 +51,7 @@ public class UserRepositoryImplIntegrationTests {
         Optional<User> optionalUser = jdbcTemplate.query(
                 "SELECT * FROM users WHERE email = ? LIMIT 1",
                 userRowMapper, "john@gmail.com").stream().findFirst();
-        assertThat(optionalUser.isPresent()).isTrue();
+        assertThat(optionalUser).isPresent();
         User createdUser = optionalUser.get();
         assertUsersAreEqual(user, createdUser);
     }
@@ -71,9 +69,10 @@ public class UserRepositoryImplIntegrationTests {
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
         underTest.create(user);
-        int userId = jdbcTemplate.queryForObject("SELECT id FROM users WHERE email = ?", Integer.class, "john@gmail.com");
+
+        int userId = getIdFromEmail(user.email());
         Optional<User> optionalUser = underTest.findOne(userId);
-        assertThat(optionalUser.isPresent()).isTrue();
+        assertThat(optionalUser).isPresent();
         User createdUser = optionalUser.get();
         assertUsersAreEqual(user, createdUser);
     }
@@ -81,7 +80,7 @@ public class UserRepositoryImplIntegrationTests {
     @Test
     public void testFindOneWithInvalidId() {
         Optional<User> result = underTest.findOne(1);
-        assertThat(result.isPresent()).isFalse();
+        assertThat(result).isNotPresent();
     }
 
     @Test
@@ -92,6 +91,7 @@ public class UserRepositoryImplIntegrationTests {
                 LocalDate.of(1975, 8, 3), LocalDate.now());
         User user3 = new User(0, "Bob", "Bob@gmail.com", "7365490142",
                 LocalDate.of(2001, 12, 19), LocalDate.now());
+
         assertThat(getRowCount()).isEqualTo(0);
         assertThat(underTest.findAll().size()).isEqualTo(0);
         underTest.create(user1);
@@ -101,16 +101,42 @@ public class UserRepositoryImplIntegrationTests {
         assertThat(underTest.findAll().size()).isEqualTo(3);
     }
 
-    // Modify - Create a user, call modify to change the email and phoneNumber
-    // Check that there is only 1 object, get it, and verify info
+    @Test
+    public void testUpdate() {
+        User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+        underTest.create(originalUser);
 
-    // Modify - Call with invalid id and test for exception or rows returned
+        int userId = getIdFromEmail(originalUser.email());
+        User updatedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
+                LocalDate.of(2003, 1, 18), null);
+
+        int rowsAffected = underTest.update(updatedUser);
+        assertThat(rowsAffected).isEqualTo(1);
+        assertThat(getRowCount()).isEqualTo(1);
+
+        Optional<User> optionalUser = underTest.findOne(userId);
+        assertThat(optionalUser).isPresent();
+
+        User user = optionalUser.get();
+        User expectedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
+                LocalDate.of(2003, 1, 18), LocalDate.now());
+        assertUsersAreEqual(user, expectedUser);
+    }
 
     // Delete - Create a user, delete it, and check that it isn't there
 
     // Delete - Delete invalid id and verify exception
 
-    // Exists - Create user, call exists with valid and invalid id and check boolean value
+    @Test
+    public void testExists() {
+        assertThat(underTest.exists(1)).isFalse();
+        User user = new User(0, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+        underTest.create(user);
+        int userId = getIdFromEmail(user.email());
+        assertThat(underTest.exists(userId)).isTrue();
+    }
 
     private int getRowCount() {
         return JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
@@ -122,5 +148,9 @@ public class UserRepositoryImplIntegrationTests {
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
         assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
+    }
+
+    private int getIdFromEmail(String email) {
+        return jdbcTemplate.queryForObject("SELECT id FROM users WHERE email = ?", Integer.class, "john@gmail.com");
     }
 }

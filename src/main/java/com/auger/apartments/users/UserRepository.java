@@ -9,4 +9,8 @@ public interface UserRepository {
     Optional<User> findOne(int id);
 
     List<User> findAll();
+
+    int update(User user);
+
+    boolean exists(int id);
 }
