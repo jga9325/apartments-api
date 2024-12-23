@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -15,8 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 @Testcontainers
 @SpringBootTest
@@ -53,11 +51,18 @@ public class UserRepositoryImplIntegrationTests {
     }
 
     @Test
-    public void testCreateDuplicateUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
+    public void testCreateUserWithDuplicateData() {
+        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        underTest.create(user);
-        assertThatThrownBy(() -> underTest.create(user)).isInstanceOf(DuplicateKeyException.class);
+        User user2 = new User(0, "John", "johnny@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        underTest.create(user1);
+
+        assertThatThrownBy(() -> underTest.create(user1)).isInstanceOf(DuplicateDataException.class)
+                .hasMessage("A user with that email already exists");
+        assertThatThrownBy(() -> underTest.create(user2)).isInstanceOf(DuplicateDataException.class)
+                .hasMessage("A user with that phone number already exists");
     }
 
     @Test
@@ -91,9 +96,13 @@ public class UserRepositoryImplIntegrationTests {
         User createdUser = underTest.create(originalUser);
 
         int userId = createdUser.id();
+
+        User sameUser = new User(userId, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), null);
+        assertThatNoException().isThrownBy(() -> underTest.update(sameUser));
+
         User updatedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
                 LocalDate.of(2003, 1, 18), null);
-
         int rowsAffected = underTest.update(updatedUser);
         assertThat(rowsAffected).isEqualTo(1);
         assertThat(getRowCount()).isEqualTo(1);
@@ -105,6 +114,27 @@ public class UserRepositoryImplIntegrationTests {
         User expectedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
                 LocalDate.of(2003, 1, 18), LocalDate.now());
         assertUsersAreEqual(user, expectedUser);
+    }
+
+    @Test
+    public void testUpdateUserWithDuplicateData() {
+        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "bob@gmail.com", "1860964851",
+                LocalDate.of(1992, 8, 15), LocalDate.now());
+
+        underTest.create(user1);
+        User createdUser2 = underTest.create(user2);
+
+        User sameEmailUser = new User(createdUser2.id(), "Bob", "john@gmail.com",
+                "1860964851", LocalDate.of(1992, 8, 15), LocalDate.now());
+        User samePhoneNumberUser = new User(createdUser2.id(), "Bob", "bob@gmail.com",
+                "1234567894", LocalDate.of(1992, 8, 15), LocalDate.now());
+
+        assertThatThrownBy(() -> underTest.update(sameEmailUser)).isInstanceOf(DuplicateDataException.class)
+                .hasMessage("A user with that email already exists");
+        assertThatThrownBy(() -> underTest.update(samePhoneNumberUser)).isInstanceOf(DuplicateDataException.class)
+                .hasMessage("A user with that phone number already exists");
     }
 
     // Delete - Create a user, delete it, and check that it isn't there
