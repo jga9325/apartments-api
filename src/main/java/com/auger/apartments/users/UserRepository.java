@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
-    int create(User user);
+    User create(User user);
 
     Optional<User> findOne(int id);
 

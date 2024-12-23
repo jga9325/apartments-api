@@ -32,28 +32,24 @@ public class UserRepositoryImplIntegrationTests {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    UserRowMapper userRowMapper;
-
     @BeforeEach
     public void clearTable() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test
-    public void testCreate() {
+    public void testCreateAndFindOne() {
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        int rowsAffected = underTest.create(user);
-        assertThat(rowsAffected).isEqualTo(1);
-        assertThat(getRowCount()).isEqualTo(1);
 
-        Optional<User> optionalUser = jdbcTemplate.query(
-                "SELECT * FROM users WHERE email = ? LIMIT 1",
-                userRowMapper, "john@gmail.com").stream().findFirst();
+        User createdUser = underTest.create(user);
+        assertThat(getRowCount()).isEqualTo(1);
+        assertThat(createdUser.id()).isNotZero();
+
+        Optional<User> optionalUser = underTest.findOne(createdUser.id());
         assertThat(optionalUser).isPresent();
-        User createdUser = optionalUser.get();
-        assertUsersAreEqual(user, createdUser);
+        User retrievedUser = optionalUser.get();
+        assertUsersAreEqual(createdUser, retrievedUser);
     }
 
     @Test
@@ -62,19 +58,6 @@ public class UserRepositoryImplIntegrationTests {
                 LocalDate.of(1999, 4, 28), LocalDate.now());
         underTest.create(user);
         assertThatThrownBy(() -> underTest.create(user)).isInstanceOf(DuplicateKeyException.class);
-    }
-
-    @Test
-    public void testFindOne() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        underTest.create(user);
-
-        int userId = getIdFromEmail(user.email());
-        Optional<User> optionalUser = underTest.findOne(userId);
-        assertThat(optionalUser).isPresent();
-        User createdUser = optionalUser.get();
-        assertUsersAreEqual(user, createdUser);
     }
 
     @Test
@@ -105,9 +88,9 @@ public class UserRepositoryImplIntegrationTests {
     public void testUpdate() {
         User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        underTest.create(originalUser);
+        User createdUser = underTest.create(originalUser);
 
-        int userId = getIdFromEmail(originalUser.email());
+        int userId = createdUser.id();
         User updatedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
                 LocalDate.of(2003, 1, 18), null);
 
@@ -133,9 +116,8 @@ public class UserRepositoryImplIntegrationTests {
         assertThat(underTest.exists(1)).isFalse();
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        underTest.create(user);
-        int userId = getIdFromEmail(user.email());
-        assertThat(underTest.exists(userId)).isTrue();
+        User createdUser = underTest.create(user);
+        assertThat(underTest.exists(createdUser.id())).isTrue();
     }
 
     private int getRowCount() {
@@ -148,9 +130,5 @@ public class UserRepositoryImplIntegrationTests {
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
         assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
-    }
-
-    private int getIdFromEmail(String email) {
-        return jdbcTemplate.queryForObject("SELECT id FROM users WHERE email = ?", Integer.class, "john@gmail.com");
     }
 }
