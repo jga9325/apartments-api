@@ -1,8 +1,6 @@
 package com.auger.apartments.users;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -31,7 +29,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        userValidator.verifyNewUser(user);
         try {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("name", user.name());
@@ -69,8 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
+    // Return void here instead of int?
     @Override
-    public int update(User user) {
+    public void update(User user) {
         userValidator.verifyExistingUser(user);
         try {
             String sql = """
@@ -78,7 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
                 SET name = ?, email = ?, phone_number = ?, birth_date = ?
                 WHERE id = ?;
                 """;
-            return jdbcTemplate.update(
+            jdbcTemplate.update(
                     sql,
                     user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.id()
             );

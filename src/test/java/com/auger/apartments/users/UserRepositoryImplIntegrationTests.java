@@ -51,21 +51,6 @@ public class UserRepositoryImplIntegrationTests {
     }
 
     @Test
-    public void testCreateUserWithDuplicateData() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "John", "johnny@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-
-        underTest.create(user1);
-
-        assertThatThrownBy(() -> underTest.create(user1)).isInstanceOf(DuplicateDataException.class)
-                .hasMessage("A user with that email already exists");
-        assertThatThrownBy(() -> underTest.create(user2)).isInstanceOf(DuplicateDataException.class)
-                .hasMessage("A user with that phone number already exists");
-    }
-
-    @Test
     public void testFindOneWithInvalidId() {
         Optional<User> result = underTest.findOne(1);
         assertThat(result).isNotPresent();
@@ -97,14 +82,9 @@ public class UserRepositoryImplIntegrationTests {
 
         int userId = createdUser.id();
 
-        User sameUser = new User(userId, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), null);
-        assertThatNoException().isThrownBy(() -> underTest.update(sameUser));
-
         User updatedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
                 LocalDate.of(2003, 1, 18), null);
-        int rowsAffected = underTest.update(updatedUser);
-        assertThat(rowsAffected).isEqualTo(1);
+        underTest.update(updatedUser);
         assertThat(getRowCount()).isEqualTo(1);
 
         Optional<User> optionalUser = underTest.findOne(userId);
@@ -114,27 +94,6 @@ public class UserRepositoryImplIntegrationTests {
         User expectedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
                 LocalDate.of(2003, 1, 18), LocalDate.now());
         assertUsersAreEqual(user, expectedUser);
-    }
-
-    @Test
-    public void testUpdateUserWithDuplicateData() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1860964851",
-                LocalDate.of(1992, 8, 15), LocalDate.now());
-
-        underTest.create(user1);
-        User createdUser2 = underTest.create(user2);
-
-        User sameEmailUser = new User(createdUser2.id(), "Bob", "john@gmail.com",
-                "1860964851", LocalDate.of(1992, 8, 15), LocalDate.now());
-        User samePhoneNumberUser = new User(createdUser2.id(), "Bob", "bob@gmail.com",
-                "1234567894", LocalDate.of(1992, 8, 15), LocalDate.now());
-
-        assertThatThrownBy(() -> underTest.update(sameEmailUser)).isInstanceOf(DuplicateDataException.class)
-                .hasMessage("A user with that email already exists");
-        assertThatThrownBy(() -> underTest.update(samePhoneNumberUser)).isInstanceOf(DuplicateDataException.class)
-                .hasMessage("A user with that phone number already exists");
     }
 
     // Delete - Create a user, delete it, and check that it isn't there

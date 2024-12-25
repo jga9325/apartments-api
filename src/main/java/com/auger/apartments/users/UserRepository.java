@@ -10,7 +10,7 @@ public interface UserRepository {
 
     List<User> findAll();
 
-    int update(User user);
+    void update(User user);
 
     boolean exists(int id);
 }
