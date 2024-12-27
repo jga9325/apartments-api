@@ -1,4 +1,4 @@
-package com.auger.apartments.users;
+package com.auger.apartments.exceptions;
 
 public class DuplicateDataException extends RuntimeException {
 

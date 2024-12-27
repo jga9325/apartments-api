@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.DuplicateDataException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

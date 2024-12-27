@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.DuplicateDataException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
