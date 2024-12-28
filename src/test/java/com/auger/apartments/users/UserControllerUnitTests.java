@@ -179,7 +179,7 @@ public class UserControllerUnitTests {
         mockMvc.perform(put("/users")
                         .content(userJson)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(userService, times(1)).updateUser(user);
     }
