@@ -1,6 +1,7 @@
 package com.auger.apartments.users;
 
 import com.auger.apartments.exceptions.DuplicateDataException;
+import com.auger.apartments.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -118,11 +119,13 @@ public class UserServiceImplUnitTests {
         User user = new User(1, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
 
+        when(userRepository.exists(user.id())).thenReturn(true);
         doNothing().when(userValidator).verifyExistingUser(user);
         doNothing().when(userRepository).update(user);
 
         underTest.updateUser(user);
 
+        verify(userRepository, times(1)).exists(user.id());
         verify(userValidator, times(1)).verifyExistingUser(user);
         verify(userRepository, times(1)).update(user);
     }
@@ -132,13 +135,15 @@ public class UserServiceImplUnitTests {
         User user = new User(1, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
 
+        when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that email already exists"))
                 .when(userValidator).verifyExistingUser(user);
 
         assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that email already exists");
+        verify(userRepository, times(1)).exists(user.id());
         verify(userValidator, times(1)).verifyExistingUser(user);
-        verifyNoInteractions(userRepository);
+        verify(userRepository, times(0)).update(user);
     }
 
     @Test
@@ -146,13 +151,29 @@ public class UserServiceImplUnitTests {
         User user = new User(1, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
 
+        when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
                 .when(userValidator).verifyExistingUser(user);
 
         assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that phone number already exists");
+        verify(userRepository, times(1)).exists(user.id());
         verify(userValidator, times(1)).verifyExistingUser(user);
-        verifyNoInteractions(userRepository);
+        verify(userRepository, times(0)).update(user);
+    }
+
+    @Test
+    public void testUpdateUserInvalidId() {
+        User user = new User(1, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        when(userRepository.exists(user.id())).thenReturn(false);
+
+        assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format("User with id %s does not exist", user.id()));
+        verify(userRepository, times(1)).exists(user.id());
+        verifyNoInteractions(userValidator);
+        verify(userRepository, times(0)).update(user);
     }
 
     @Test

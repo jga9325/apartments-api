@@ -17,4 +17,9 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<?> handleDatabaseException(DatabaseException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

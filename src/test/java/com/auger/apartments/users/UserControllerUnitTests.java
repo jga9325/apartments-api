@@ -1,6 +1,7 @@
 package com.auger.apartments.users;
 
 import com.auger.apartments.exceptions.DuplicateDataException;
+import com.auger.apartments.exceptions.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -64,14 +66,11 @@ public class UserControllerUnitTests {
 
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(post("/users")
-                .content(userJson)
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/users")
+                        .content(userJson)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
-                .andReturn();
-
-        String responseString = result.getResponse().getContentAsString();
-        assertThat(responseString).isEqualTo("A user with that email already exists");
+                .andExpect(content().string("A user with that email already exists"));
 
         verify(userService, times(1)).createUser(user);
     }
@@ -86,14 +85,11 @@ public class UserControllerUnitTests {
 
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users")
                 .content(userJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
-                .andReturn();
-
-        String responseString = result.getResponse().getContentAsString();
-        assertThat(responseString).isEqualTo("A user with that phone number already exists");
+                .andExpect(content().string("A user with that phone number already exists"));
 
         verify(userService, times(1)).createUser(user);
     }
@@ -123,7 +119,8 @@ public class UserControllerUnitTests {
         when(userService.getUser(userId)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/users/{id}", userId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", userId)));
 
         verify(userService, times(1)).getUser(userId);
     }
@@ -197,14 +194,11 @@ public class UserControllerUnitTests {
 
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(put("/users")
-                        .content(userJson)
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/users")
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
-                .andReturn();
-
-        String responseString = result.getResponse().getContentAsString();
-        assertThat(responseString).isEqualTo("A user with that email already exists");
+                .andExpect(content().string("A user with that email already exists"));
 
         verify(userService, times(1)).updateUser(user);
     }
@@ -219,17 +213,34 @@ public class UserControllerUnitTests {
 
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(put("/users")
-                        .content(userJson)
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/users")
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
-                .andReturn();
-
-        String responseString = result.getResponse().getContentAsString();
-        assertThat(responseString).isEqualTo("A user with that phone number already exists");
+                .andExpect(content().string("A user with that phone number already exists"));
 
         verify(userService, times(1)).updateUser(user);
     }
+
+    @Test
+    public void testUpdateUserInvalidId() throws Exception {
+        User user = new User(1, "John", "john@gmail.com", "1234567894",
+                LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", user.id())))
+                .when(userService).updateUser(user);
+
+        String userJson = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(put("/users")
+                        .content(userJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", user.id())));
+
+        verify(userService, times(1)).updateUser(user);
+    }
+
 
     private void assertUsersAreEqual(User u1, User u2) {
         assertThat(u1.name()).isEqualTo(u2.name());

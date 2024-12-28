@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,14 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
+    // Have this throw a custom UserNotFoundException
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable int id) {
         Optional<User> user = userService.getUser(id);
         if (user.isPresent()) {
             return new ResponseEntity<>(user.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new UserNotFoundException(String.format("User with id %s does not exist", id));
         }
     }
 

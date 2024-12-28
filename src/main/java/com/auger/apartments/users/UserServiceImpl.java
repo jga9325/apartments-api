@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,8 +35,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(User user) {
-        userValidator.verifyExistingUser(user);
-        userRepository.update(user);
+        if (doesExist(user.id())) {
+            userValidator.verifyExistingUser(user);
+            userRepository.update(user);
+        } else {
+            throw new UserNotFoundException(String.format("User with id %s does not exist", user.id()));
+        }
     }
 
     @Override
