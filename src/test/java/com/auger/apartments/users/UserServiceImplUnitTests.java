@@ -128,6 +128,7 @@ public class UserServiceImplUnitTests {
         verify(userRepository, times(1)).exists(user.id());
         verify(userValidator, times(1)).verifyExistingUser(user);
         verify(userRepository, times(1)).update(user);
+        assertThatNoException().isThrownBy(() -> underTest.updateUser(user));
     }
 
     @Test
@@ -190,7 +191,6 @@ public class UserServiceImplUnitTests {
         assertThat(underTest.doesExist(nonExistingUserId)).isFalse();
         verify(userRepository, times(1)).exists(nonExistingUserId);
     }
-
 
     private void assertUsersAreEqual(User u1, User u2) {
         assertThat(u1.name()).isEqualTo(u2.name());

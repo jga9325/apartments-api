@@ -24,7 +24,6 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    // Have this throw a custom UserNotFoundException
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable int id) {
         Optional<User> user = userService.getUser(id);

@@ -67,8 +67,8 @@ public class UserControllerUnitTests {
         String userJson = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users")
-                        .content(userJson)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
                 .andExpect(content().string("A user with that email already exists"));
 
@@ -233,8 +233,8 @@ public class UserControllerUnitTests {
         String userJson = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(put("/users")
-                        .content(userJson)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(String.format("User with id %s does not exist", user.id())));
 

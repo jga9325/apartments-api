@@ -40,6 +40,7 @@ public class UserRepositoryImplIntegrationTests {
         User user = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
 
+        assertThat(getRowCount()).isEqualTo(0);
         User createdUser = underTest.create(user);
         assertThat(getRowCount()).isEqualTo(1);
         assertThat(createdUser.id()).isNotZero();

@@ -67,7 +67,6 @@ public class UserRepositoryImpl implements UserRepository {
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
-    // Return void here instead of int?
     @Override
     public void update(User user) {
         userValidator.verifyExistingUser(user);

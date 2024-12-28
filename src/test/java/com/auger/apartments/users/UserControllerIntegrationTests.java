@@ -82,13 +82,13 @@ public class UserControllerIntegrationTests {
     public void testCreateUserDuplicatePhoneNumber() {
         User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicateEmailUser = new User(0, "John", "johnny@gmail.com", "1234567894",
+        User duplicatePhoneNumberUser = new User(0, "John", "johnny@gmail.com", "1234567894",
                 LocalDate.of(1999, 4, 28), LocalDate.now());
 
         testRestTemplate.postForEntity("/users", originalUser, User.class);
 
         ResponseEntity<String> response = testRestTemplate
-                .postForEntity("/users", duplicateEmailUser, String.class);
+                .postForEntity("/users", duplicatePhoneNumberUser, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isEqualTo("A user with that phone number already exists");
@@ -167,10 +167,10 @@ public class UserControllerIntegrationTests {
         testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
-        User updatedUser = new User(createdUser.id(), "Bob", "john@gmail.com", "1876542567",
+        User duplicateEmailUser = new User(createdUser.id(), "Bob", "john@gmail.com", "1876542567",
                 LocalDate.of(1989, 7, 30), LocalDate.now());
 
-        HttpEntity<User> requestEntity = new HttpEntity<>(updatedUser);
+        HttpEntity<User> requestEntity = new HttpEntity<>(duplicateEmailUser);
         ResponseEntity<String> updateResponse = testRestTemplate
                 .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
 
@@ -188,10 +188,10 @@ public class UserControllerIntegrationTests {
         testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
-        User updatedUser = new User(createdUser.id(), "Bob", "bob@gmail.com", "1234567894",
+        User duplicatePhoneNumberUser = new User(createdUser.id(), "Bob", "bob@gmail.com", "1234567894",
                 LocalDate.of(1989, 7, 30), LocalDate.now());
 
-        HttpEntity<User> requestEntity = new HttpEntity<>(updatedUser);
+        HttpEntity<User> requestEntity = new HttpEntity<>(duplicatePhoneNumberUser);
         ResponseEntity<String> updateResponse = testRestTemplate
                 .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
 
