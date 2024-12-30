@@ -13,13 +13,14 @@ CREATE TABLE users (
 
 CREATE TABLE apartments (
     id SERIAL PRIMARY KEY,
-    name text NOT NULL,
-    number_of_beds integer NOT NULL,
+    title text,
+    description text,
+    number_of_bedrooms integer NOT NULL,
     number_of_bathrooms integer NOT NULL,
     state text NOT NULL,
     city text NOT NULL,
     square_feet integer NOT NULL,
-    price_per_month_cents integer NOT NULL,
+    monthly_rent integer NOT NULL,
     date_listed date NOT NULL,
     available boolean NOT NULL,
     owner_id integer REFERENCES users NOT NULL,
