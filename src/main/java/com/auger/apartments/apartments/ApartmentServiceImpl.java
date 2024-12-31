@@ -1,7 +1,6 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.exceptions.ApartmentNotFoundException;
-import com.auger.apartments.exceptions.UserNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
