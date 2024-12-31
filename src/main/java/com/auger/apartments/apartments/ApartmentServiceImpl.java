@@ -1,5 +1,11 @@
 package com.auger.apartments.apartments;
 
+import com.auger.apartments.exceptions.ApartmentNotFoundException;
+import com.auger.apartments.exceptions.UserNotFoundException;
+
+import java.util.List;
+import java.util.Optional;
+
 public class ApartmentServiceImpl implements ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
@@ -14,6 +20,26 @@ public class ApartmentServiceImpl implements ApartmentService {
     public Apartment createApartment(Apartment apartment) {
         apartmentValidator.validateNewApartment(apartment);
         return apartmentRepository.create(apartment);
+    }
+
+    @Override
+    public Optional<Apartment> getApartment(int id) {
+        return apartmentRepository.findOne(id);
+    }
+
+    @Override
+    public List<Apartment> getAllApartments() {
+        return apartmentRepository.findAll();
+    }
+
+    @Override
+    public void updateApartment(Apartment apartment) {
+        if (doesExist(apartment.id())) {
+            apartmentValidator.validateExistingApartment(apartment);
+            apartmentRepository.update(apartment);
+        } else {
+            throw new ApartmentNotFoundException(String.format("Apartment with id %s does not exist", apartment.id()));
+        }
     }
 
     @Override

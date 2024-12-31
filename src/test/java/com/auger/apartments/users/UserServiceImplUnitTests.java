@@ -85,7 +85,7 @@ public class UserServiceImplUnitTests {
         verify(userRepository, times(1)).findOne(user.id());
 
         Optional<User> emptyUser = underTest.getUser(nonExistingUserId);
-        assertThat(emptyUser).isEmpty();
+        assertThat(emptyUser).isNotPresent();
         verify(userRepository, times(1)).findOne(nonExistingUserId);
     }
 
