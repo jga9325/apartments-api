@@ -22,4 +22,9 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ApartmentNotFoundException.class)
+    public ResponseEntity<?> handleApartmentNotFoundException(ApartmentNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
