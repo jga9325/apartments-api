@@ -27,7 +27,7 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
     }
 
     @Override
-    public Apartment createApartment(Apartment apartment) {
+    public Apartment create(Apartment apartment) {
         try {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("title", apartment.title());
@@ -77,7 +77,7 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
     }
 
     @Override
-    public void updateApartment(Apartment apartment) {
+    public void update(Apartment apartment) {
         try {
             String sql = """
                 UPDATE apartments

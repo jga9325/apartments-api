@@ -64,9 +64,9 @@ public class ApartmentRepositoryImplIntegrationTests {
                 "One bed one bath apartment near the beach!", 1,
                 1, "FL", "Miami", 800, 185000,
                 null, true, user.id(), null);
-        apartment1 = underTest.createApartment(apt1);
-        apartment2 = underTest.createApartment(apt2);
-        apartment3 = underTest.createApartment(apt3);
+        apartment1 = underTest.create(apt1);
+        apartment2 = underTest.create(apt2);
+        apartment3 = underTest.create(apt3);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ApartmentRepositoryImplIntegrationTests {
                 null, true, user.id(), null);
 
         assertThat(getRowCount()).isEqualTo(3);
-        Apartment createdApartment = underTest.createApartment(apartment);
+        Apartment createdApartment = underTest.create(apartment);
         assertThat(getRowCount()).isEqualTo(4);
         assertThat(createdApartment.id()).isNotNull();
 
@@ -114,15 +114,15 @@ public class ApartmentRepositoryImplIntegrationTests {
     }
 
     @Test
-    public void testUpdateApartment() {
+    public void testUpdate() {
         Apartment updatedApartment = new Apartment(apartment1.id(), apartment1.title(),
                 "Spacious, brand new appliances, new building, best views in the city!",
                 apartment1.numberOfBedrooms(), apartment1.numberOfBathrooms(),
                 apartment1.state(), apartment1.city(), apartment1.squareFeet(),
                 675000, null, apartment1.available(),
-                apartment1.id(), apartment1.renterId());
+                apartment1.ownerId(), apartment1.renterId());
 
-        underTest.updateApartment(updatedApartment);
+        underTest.update(updatedApartment);
 
         assertThat(getRowCount()).isEqualTo(3);
 
@@ -134,7 +134,7 @@ public class ApartmentRepositoryImplIntegrationTests {
                 apartment1.numberOfBedrooms(), apartment1.numberOfBathrooms(),
                 apartment1.state(), apartment1.city(), apartment1.squareFeet(),
                 675000, apartment1.dateListed(), apartment1.available(),
-                apartment1.id(), apartment1.renterId());
+                apartment1.ownerId(), apartment1.renterId());
         Apartment retrievedApartment = optionalApartment.get();
         assertApartmentsAreEqual(retrievedApartment, expectedApartment);
     }

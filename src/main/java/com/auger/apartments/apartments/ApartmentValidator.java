@@ -1,6 +1,8 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.exceptions.DuplicateDataException;
+import com.auger.apartments.exceptions.UserNotFoundException;
+import com.auger.apartments.users.UserService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -8,20 +10,26 @@ import org.springframework.stereotype.Component;
 public class ApartmentValidator {
 
     private final JdbcTemplate jdbcTemplate;
+    private final UserService userService;
 
-    public ApartmentValidator(JdbcTemplate jdbcTemplate) {
+    public ApartmentValidator(JdbcTemplate jdbcTemplate, UserService userService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userService = userService;
     }
 
-    public void verifyNewApartment(Apartment apartment) {
-        verifyRenterIdForNewApartment(apartment.renterId());
+    public void validateNewApartment(Apartment apartment) {
+        verifyOwnerExists(apartment.ownerId());
+        verifyRenterExists(apartment.renterId());
+        verifyUniqueRenterForNewApartment(apartment.renterId());
     }
 
-    public void verifyExistingApartment(Apartment apartment) {
-        verifyRenterIdForExistingApartment(apartment.id(), apartment.renterId());
+    public void validateExistingApartment(Apartment apartment) {
+        verifyOwnerExists(apartment.ownerId());
+        verifyRenterExists(apartment.renterId());
+        verifyUniqueRenterForExistingApartment(apartment.id(), apartment.renterId());
     }
 
-    public void verifyRenterIdForNewApartment(int renterId) {
+    public void verifyUniqueRenterForNewApartment(Integer renterId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM apartments
@@ -36,7 +44,7 @@ public class ApartmentValidator {
         }
     }
 
-    public void verifyRenterIdForExistingApartment(int id, int renterId) {
+    public void verifyUniqueRenterForExistingApartment(int id, Integer renterId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM apartments
@@ -49,6 +57,18 @@ public class ApartmentValidator {
                     A user with id %s is renting a different apartment.
                     A user can only rent one apartment at a time.
                     """, renterId));
+        }
+    }
+
+    public void verifyOwnerExists(int ownerId) {
+        if(!userService.doesExist(ownerId)) {
+            throw new UserNotFoundException(String.format("User with id %s does not exist", ownerId));
+        }
+    }
+
+    public void verifyRenterExists(Integer renterId) {
+        if(renterId != null && !userService.doesExist(renterId)) {
+            throw new UserNotFoundException(String.format("User with id %s does not exist", renterId));
         }
     }
 }
