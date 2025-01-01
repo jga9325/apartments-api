@@ -1,8 +1,8 @@
 package com.auger.apartments.apartments;
 
+import com.auger.apartments.exceptions.ApartmentNotFoundException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
-import com.auger.apartments.users.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -209,28 +208,112 @@ public class ApartmentControllerUnitTests {
     }
 
     @Test
-    public void testUpdateApartment() {
+    public void testUpdateApartment() throws Exception {
+        Apartment apartment = new Apartment(1, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, 1, null);
 
+        doNothing().when(apartmentService).updateApartment(apartment);
+
+        String apartmentJson = objectMapper.writeValueAsString(apartment);
+
+        mockMvc.perform(put("/apartments")
+                        .content(apartmentJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(apartmentService, times(1)).updateApartment(apartment);
     }
 
     @Test
-    public void testUpdateApartmentInvalidId() {
+    public void testUpdateApartmentInvalidId() throws Exception {
+        Apartment apartment = new Apartment(1, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, 1, null);
 
+        doThrow(new ApartmentNotFoundException(String.format("Apartment with id %s does not exist", apartment.id())))
+                .when(apartmentService).updateApartment(apartment);
+
+        String apartmentJson = objectMapper.writeValueAsString(apartment);
+
+        mockMvc.perform(put("/apartments")
+                        .content(apartmentJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("Apartment with id %s does not exist", apartment.id())));
+
+        verify(apartmentService, times(1)).updateApartment(apartment);
     }
 
     @Test
-    public void testUpdateApartmentInvalidOwner() {
+    public void testUpdateApartmentInvalidOwner() throws Exception {
+        Apartment apartment = new Apartment(1, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, 1, null);
 
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", apartment.ownerId())))
+                .when(apartmentService).updateApartment(apartment);
+
+        String apartmentJson = objectMapper.writeValueAsString(apartment);
+
+        mockMvc.perform(put("/apartments")
+                        .content(apartmentJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", apartment.ownerId())));
+
+        verify(apartmentService, times(1)).updateApartment(apartment);
     }
 
     @Test
-    public void testUpdateApartmentInvalidRenter() {
+    public void testUpdateApartmentInvalidRenter() throws Exception {
+        Apartment apartment = new Apartment(1, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, 1, null);
 
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", apartment.renterId())))
+                .when(apartmentService).updateApartment(apartment);
+
+        String apartmentJson = objectMapper.writeValueAsString(apartment);
+
+        mockMvc.perform(put("/apartments")
+                        .content(apartmentJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", apartment.renterId())));
+
+        verify(apartmentService, times(1)).updateApartment(apartment);
     }
 
     @Test
-    public void testUpdateApartmentDuplicateRenter() {
+    public void testUpdateApartmentDuplicateRenter() throws Exception {
+        Apartment apartment = new Apartment(1, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, 1, null);
 
+        doThrow(new DuplicateDataException(String.format("""
+                    A user with id %s is renting a different apartment.
+                    A user can only rent one apartment at a time.
+                    """, apartment.renterId())))
+                .when(apartmentService).updateApartment(apartment);
+
+        String apartmentJson = objectMapper.writeValueAsString(apartment);
+
+        mockMvc.perform(put("/apartments")
+                        .content(apartmentJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(String.format("""
+                    A user with id %s is renting a different apartment.
+                    A user can only rent one apartment at a time.
+                    """, apartment.renterId())));
+
+        verify(apartmentService, times(1)).updateApartment(apartment);
     }
 
     private void assertApartmentsAreEqual(Apartment a1, Apartment a2) {

@@ -39,4 +39,10 @@ public class ApartmentController {
         List<Apartment> allApartments = apartmentService.getAllApartments();
         return new ResponseEntity<>(allApartments, HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<Void> updateApartment(@RequestBody Apartment apartment) {
+        apartmentService.updateApartment(apartment);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
