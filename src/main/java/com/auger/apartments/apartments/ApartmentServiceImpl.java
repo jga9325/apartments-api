@@ -1,10 +1,12 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.exceptions.ApartmentNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ApartmentServiceImpl implements ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
