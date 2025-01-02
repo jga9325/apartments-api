@@ -17,13 +17,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper userRowMapper;
-    private final UserValidator userValidator;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper, UserValidator userValidator) {
+    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.userRowMapper = userRowMapper;
-        this.userValidator = userValidator;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("users")
                 .usingGeneratedKeyColumns("id");
     }
@@ -69,7 +67,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        userValidator.verifyExistingUser(user);
         try {
             String sql = """
                 UPDATE users

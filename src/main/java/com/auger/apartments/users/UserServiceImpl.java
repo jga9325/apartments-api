@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        userValidator.verifyNewUser(user);
+        userValidator.validateNewUser(user);
         return userRepository.create(user);
     }
 
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(User user) {
         if (doesExist(user.id())) {
-            userValidator.verifyExistingUser(user);
+            userValidator.validateExistingUser(user);
             userRepository.update(user);
         } else {
             throw new UserNotFoundException(String.format("User with id %s does not exist", user.id()));
