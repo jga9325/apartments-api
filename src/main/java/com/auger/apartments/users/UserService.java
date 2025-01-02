@@ -12,5 +12,5 @@ public interface UserService {
 
     void updateUser(User user);
 
-    boolean doesExist(int id);
+    boolean doesExist(Integer id);
 }

@@ -28,11 +28,11 @@ public class UserControllerUnitTests {
     @Autowired
     MockMvc mockMvc;
 
-    @MockitoBean
-    UserService userService;
-
     @Autowired
     ObjectMapper objectMapper;
+
+    @MockitoBean
+    UserService userService;
 
     @Test
     public void testCreateUser() throws Exception {

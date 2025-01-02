@@ -2,7 +2,12 @@ package com.auger.apartments.users;
 
 import java.time.LocalDate;
 
-public record User(int id, String name, String email, String phoneNumber, LocalDate birthDate, LocalDate dateJoined) {
+public record User(int id,
+                   String name,
+                   String email,
+                   String phoneNumber,
+                   LocalDate birthDate,
+                   LocalDate dateJoined) {
 
     public User {
         if (phoneNumber.length() != 10) {
@@ -18,8 +23,7 @@ public record User(int id, String name, String email, String phoneNumber, LocalD
         LocalDate latestDate = LocalDate.now().minusYears(18);
         if (birthDate.isBefore(earliestDate)) {
             throw new IllegalArgumentException("Age limit exceeded");
-        }
-        if (birthDate.isAfter(latestDate)) {
+        } else if (birthDate.isAfter(latestDate)) {
             throw new IllegalArgumentException("Must be at least 18 years of age");
         }
     }

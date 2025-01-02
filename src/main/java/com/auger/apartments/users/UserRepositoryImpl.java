@@ -40,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             int id = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
             return new User(id, user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.dateJoined());
-        } catch (DataAccessException e) {
+        } catch (DataAccessException ex) {
             throw new DatabaseException("An error occurred when inserting a user in the database");
         }
     }
@@ -80,7 +80,7 @@ public class UserRepositoryImpl implements UserRepository {
                     sql,
                     user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.id()
             );
-        } catch (DataAccessException e) {
+        } catch (DataAccessException ex) {
             throw new DatabaseException("An error occurred when updating a user in the database");
         }
     }
