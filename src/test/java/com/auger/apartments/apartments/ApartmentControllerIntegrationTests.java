@@ -47,8 +47,8 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testCreateApartmentAndFindApartment() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -86,8 +86,8 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testCreateApartmentInvalidRenter() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -104,10 +104,10 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testCreateApartmentDuplicateRenter() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "8456320985",
-                LocalDate.of(1994, 10, 11), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "8456320985", LocalDate.of(1994, 10, 11), LocalDate.now());
         User createdUser1 = testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser2 = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
@@ -145,10 +145,10 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testGetAllApartments() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "8456320985",
-                LocalDate.of(1994, 10, 11), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "8456320985", LocalDate.of(1994, 10, 11), LocalDate.now());
         User createdUser1 = testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser2 = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
@@ -194,8 +194,8 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testUpdateApartment() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -238,8 +238,8 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testUpdateApartmentInvalidOwner() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -265,8 +265,8 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testUpdateApartmentInvalidRenter() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -292,10 +292,10 @@ public class ApartmentControllerIntegrationTests {
 
     @Test
     public void testUpdateApartmentDuplicateRenter() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "8456320985",
-                LocalDate.of(1994, 10, 11), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "8456320985", LocalDate.of(1994, 10, 11), LocalDate.now());
         User createdUser1 = testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser2 = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 

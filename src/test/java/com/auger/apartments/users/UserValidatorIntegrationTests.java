@@ -40,8 +40,8 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniqueEmailForNewUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         assertThatNoException().isThrownBy(() -> underTest.verifyUniqueEmailForNewUser(user.email()));
         userRepository.create(user);
@@ -51,8 +51,8 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniquePhoneNumberForNewUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         assertThatNoException().isThrownBy(() -> underTest.verifyUniquePhoneNumberForNewUser(user.phoneNumber()));
         userRepository.create(user);
@@ -63,19 +63,22 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniqueEmailForExistingUser() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
         userRepository.create(user1);
         User createdUser2 = userRepository.create(user2);
 
-        User sameUser = new User(createdUser2.id(), "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
-        assertThatNoException().isThrownBy(() -> underTest.verifyUniqueEmailForExistingUser(sameUser.id(), sameUser.email()));
-
-        User duplicateEmailUser = new User(createdUser2.id(), "Bob", "john@gmail.com",
+        User sameUser = new User(createdUser2.id(), "Bob", "Daly", "bob@gmail.com",
                 "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
+        assertThatNoException().isThrownBy(
+                () -> underTest.verifyUniqueEmailForExistingUser(sameUser.id(), sameUser.email())
+        );
+
+        User duplicateEmailUser = new User(createdUser2.id(), "Bob", "Daly",
+                "john@gmail.com", "7453928318", LocalDate.of(2000, 1, 1),
+                LocalDate.now());
         assertThatThrownBy(() -> underTest.verifyUniqueEmailForExistingUser(
                 duplicateEmailUser.id(), duplicateEmailUser.email())
         )
@@ -85,21 +88,22 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniquePhoneNumberForExistingUser() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
         userRepository.create(user1);
         User createdUser2 = userRepository.create(user2);
 
-        User sameUser = new User(createdUser2.id(), "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
+        User sameUser = new User(createdUser2.id(), "Bob", "Daly", "bob@gmail.com",
+                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
         assertThatNoException().isThrownBy(() -> underTest.verifyUniquePhoneNumberForExistingUser(
                 sameUser.id(), sameUser.phoneNumber())
         );
 
-        User duplicatePhoneNumberUser = new User(createdUser2.id(), "Bob", "bob@gmail.com",
-                "1234567894", LocalDate.of(2000, 1, 1), LocalDate.now());
+        User duplicatePhoneNumberUser = new User(createdUser2.id(), "Bob", "Daly",
+                "bob@gmail.com", "1234567894", LocalDate.of(2000, 1, 1),
+                LocalDate.now());
         assertThatThrownBy(() -> underTest.verifyUniquePhoneNumberForExistingUser(
                 duplicatePhoneNumberUser.id(), duplicatePhoneNumberUser.phoneNumber())
         )
@@ -109,16 +113,16 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testValidateNewUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         assertThatNoException().isThrownBy(() -> underTest.validateNewUser(user));
     }
 
     @Test
     public void testValidateNewUserDuplicateEmail() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         userRepository.create(user);
         assertThatThrownBy(() -> underTest.validateNewUser(user))
@@ -128,9 +132,9 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testValidateNewUserDuplicatePhoneNumber() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicatePhoneNumberUser = new User(0, "John", "johnny@gmail.com",
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User duplicatePhoneNumberUser = new User(0, "John", "Rogers", "johnny@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         userRepository.create(user);
@@ -141,11 +145,11 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = userRepository.create(user);
 
-        User updatedUser = new User(createdUser.id(), "John", "johnny@gmail.com",
+        User updatedUser = new User(createdUser.id(), "John", "Rogers", "johnny@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         assertThatNoException().isThrownBy(() -> underTest.validateExistingUser(updatedUser));
@@ -153,15 +157,16 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingUserDuplicateEmail() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
         userRepository.create(user1);
         User createdUser2 = userRepository.create(user2);
 
-        User duplicateEmailUser = new User(createdUser2.id(), "Bob", "john@gmail.com",
-                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
+        User duplicateEmailUser = new User(createdUser2.id(), "Bob", "Daly",
+                "john@gmail.com", "7453928318", LocalDate.of(2000, 1, 1),
+                LocalDate.now());
 
         assertThatThrownBy(() -> underTest.validateExistingUser(duplicateEmailUser))
                 .isInstanceOf(DuplicateDataException.class)
@@ -170,15 +175,16 @@ public class UserValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingUserDuplicatePhoneNumber() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "7453928318",
-                LocalDate.of(2000, 1, 1), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "7453928318", LocalDate.of(2000, 1, 1), LocalDate.now());
         userRepository.create(user1);
         User createdUser2 = userRepository.create(user2);
 
-        User duplicatePhoneNumberUser = new User(createdUser2.id(), "Bob", "bob@gmail.com",
-                "1234567894", LocalDate.of(2000, 1, 1), LocalDate.now());
+        User duplicatePhoneNumberUser = new User(createdUser2.id(), "Bob", "Daly",
+                "bob@gmail.com", "1234567894", LocalDate.of(2000, 1, 1),
+                LocalDate.now());
 
         assertThatThrownBy(() -> underTest.validateExistingUser(duplicatePhoneNumberUser))
                 .isInstanceOf(DuplicateDataException.class)

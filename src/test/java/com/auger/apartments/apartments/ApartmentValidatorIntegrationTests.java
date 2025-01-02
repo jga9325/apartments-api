@@ -47,10 +47,10 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniqueRenterForNewApartment() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
 
@@ -71,12 +71,12 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testVerifyUniqueRenterForExistingApartment() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
-        User user3 = new User(0, "Stacy", "stacy@gmail.com", "7654334298",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user3 = new User(0, "Stacy", "Jones", "stacy@gmail.com",
+                "7654334298", LocalDate.of(2000, 7, 14), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
         User createdUser3 = userService.createUser(user3);
@@ -115,10 +115,10 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateNewApartment() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
 
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
@@ -138,10 +138,10 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateNewApartmentDuplicateRenterId() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
 
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
@@ -163,10 +163,10 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingApartment() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
 
@@ -190,12 +190,12 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingApartmentDuplicateRenterId() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1845363790",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
-        User user3 = new User(0, "Stacy", "stacy@gmail.com", "7654334298",
-                LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1845363790", LocalDate.of(2000, 7, 14), LocalDate.now());
+        User user3 = new User(0, "Stacy", "Jones", "stacy@gmail.com",
+                "7654334298", LocalDate.of(2000, 7, 14), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
         User createdUser2 = userService.createUser(user2);
         User createdUser3 = userService.createUser(user3);
@@ -230,8 +230,8 @@ public class ApartmentValidatorIntegrationTests {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage(String.format("User with id %s does not exist", invalidOwnerId));
 
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = userService.createUser(user);
 
         assertThatNoException().isThrownBy(() -> underTest.verifyOwnerExists(createdUser.id()));
@@ -246,8 +246,8 @@ public class ApartmentValidatorIntegrationTests {
 
         assertThatNoException().isThrownBy(() -> underTest.verifyRenterExists(null));
 
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = userService.createUser(user);
 
         assertThatNoException().isThrownBy(() -> underTest.verifyRenterExists(createdUser.id()));
@@ -266,8 +266,8 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateNewApartmentInvalidRenter() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -281,8 +281,8 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingApartmentInvalidOwner() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
 
         Apartment apartment = new Apartment(null, "Main Street Condo",
@@ -302,8 +302,8 @@ public class ApartmentValidatorIntegrationTests {
 
     @Test
     public void testValidateExistingApartmentInvalidRenter() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser1 = userService.createUser(user1);
 
         Apartment apartment = new Apartment(null, "Main Street Condo",

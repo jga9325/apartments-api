@@ -4,7 +4,8 @@ DROP TABLE IF EXISTS "users";
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name text NOT NULL,
+    first_name text NOT NULL,
+    last_name text NOT NULL,
     email text NOT NULL UNIQUE,
     phone_number text NOT NULL UNIQUE,
     birth_date date NOT NULL,

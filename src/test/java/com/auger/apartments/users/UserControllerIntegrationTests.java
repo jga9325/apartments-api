@@ -45,8 +45,8 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testCreateUserAndFindUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         ResponseEntity<User> createdUser = testRestTemplate.postForEntity("/users", user, User.class);
 
@@ -64,10 +64,10 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testCreateUserDuplicateEmail() {
-        User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicateEmailUser = new User(0, "John", "john@gmail.com", "1834276539",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User originalUser = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User duplicateEmailUser = new User(0, "John", "Rogers", "john@gmail.com",
+                "1834276539", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         testRestTemplate.postForEntity("/users", originalUser, User.class);
 
@@ -80,10 +80,10 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testCreateUserDuplicatePhoneNumber() {
-        User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicatePhoneNumberUser = new User(0, "John", "johnny@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User originalUser = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User duplicatePhoneNumberUser = new User(0, "John", "Rogers", "johnny@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         testRestTemplate.postForEntity("/users", originalUser, User.class);
 
@@ -107,12 +107,12 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testGetAllUsers() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "7564839402",
-                LocalDate.of(1985, 2, 7), LocalDate.now());
-        User user3 = new User(0, "Jennifer", "jennifer@gmail.com", "1275643908",
-                LocalDate.of(2001, 8, 15), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "7564839402", LocalDate.of(1985, 2, 7), LocalDate.now());
+        User user3 = new User(0, "Jennifer", "Lilly", "jennifer@gmail.com",
+                "1275643908", LocalDate.of(2001, 8, 15), LocalDate.now());
 
         User createdUser1 = testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser2 = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
@@ -140,13 +140,13 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testUpdateUser() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
 
-        User updatedUser = new User(createdUser.id(), "John", "johnny@gmail.com", "7543267890",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User updatedUser = new User(createdUser.id(), "John", "Rogers", "johnny@gmail.com",
+                "7543267890", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         HttpEntity<User> requestEntity = new HttpEntity<>(updatedUser);
         ResponseEntity<Void> updateResponse = testRestTemplate
@@ -159,16 +159,17 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testUpdateUserDuplicateEmail() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1876542567",
-                LocalDate.of(1989, 7, 30), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1876542567", LocalDate.of(1989, 7, 30), LocalDate.now());
 
         testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
-        User duplicateEmailUser = new User(createdUser.id(), "Bob", "john@gmail.com", "1876542567",
-                LocalDate.of(1989, 7, 30), LocalDate.now());
+        User duplicateEmailUser = new User(createdUser.id(), "Bob", "Daly",
+                "john@gmail.com", "1876542567", LocalDate.of(1989, 7, 30),
+                LocalDate.now());
 
         HttpEntity<User> requestEntity = new HttpEntity<>(duplicateEmailUser);
         ResponseEntity<String> updateResponse = testRestTemplate
@@ -180,16 +181,17 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testUpdateUserDuplicatePhoneNumber() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "bob@gmail.com", "1876542567",
-                LocalDate.of(1989, 7, 30), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
+                "1876542567", LocalDate.of(1989, 7, 30), LocalDate.now());
 
         testRestTemplate.postForEntity("/users", user1, User.class).getBody();
         User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
 
-        User duplicatePhoneNumberUser = new User(createdUser.id(), "Bob", "bob@gmail.com", "1234567894",
-                LocalDate.of(1989, 7, 30), LocalDate.now());
+        User duplicatePhoneNumberUser = new User(createdUser.id(), "Bob", "Daly",
+                "bob@gmail.com", "1234567894", LocalDate.of(1989, 7, 30),
+                LocalDate.now());
 
         HttpEntity<User> requestEntity = new HttpEntity<>(duplicatePhoneNumberUser);
         ResponseEntity<String> updateResponse = testRestTemplate
@@ -201,8 +203,8 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testUpdateUserInvalidId() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "john@gmail.com", "Rogers",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         HttpEntity<User> requestEntity = new HttpEntity<>(user);
         ResponseEntity<String> updateResponse = testRestTemplate
@@ -213,7 +215,8 @@ public class UserControllerIntegrationTests {
     }
 
     private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.name()).isEqualTo(u2.name());
+        assertThat(u1.firstName()).isEqualTo(u2.firstName());
+        assertThat(u1.lastName()).isEqualTo(u2.lastName());
         assertThat(u1.email()).isEqualTo(u2.email());
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());

@@ -37,8 +37,8 @@ public class UserRepositoryImplIntegrationTests {
 
     @Test
     public void testCreateAndFindOne() {
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         assertThat(getRowCount()).isEqualTo(0);
         User createdUser = underTest.create(user);
@@ -59,12 +59,12 @@ public class UserRepositoryImplIntegrationTests {
 
     @Test
     public void testFindAll() {
-        User user1 = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Jennifer", "jennifer@gmail.com", "9876543214",
-                LocalDate.of(1975, 8, 3), LocalDate.now());
-        User user3 = new User(0, "Bob", "Bob@gmail.com", "7365490142",
-                LocalDate.of(2001, 12, 19), LocalDate.now());
+        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(0, "Jennifer", "Lilly", "jennifer@gmail.com",
+                "9876543214", LocalDate.of(1975, 8, 3), LocalDate.now());
+        User user3 = new User(0, "Bob", "Daly", "Bob@gmail.com",
+                "7365490142", LocalDate.of(2001, 12, 19), LocalDate.now());
 
         assertThat(getRowCount()).isEqualTo(0);
         assertThat(underTest.findAll().size()).isEqualTo(0);
@@ -77,14 +77,14 @@ public class UserRepositoryImplIntegrationTests {
 
     @Test
     public void testUpdate() {
-        User originalUser = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User originalUser = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = underTest.create(originalUser);
 
         int userId = createdUser.id();
 
-        User updatedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
-                LocalDate.of(2003, 1, 18), null);
+        User updatedUser = new User(userId, "Kai", "Asakura", "kai@gmail.com",
+                "7865436549", LocalDate.of(2003, 1, 18), null);
         underTest.update(updatedUser);
         assertThat(getRowCount()).isEqualTo(1);
 
@@ -92,8 +92,8 @@ public class UserRepositoryImplIntegrationTests {
         assertThat(optionalUser).isPresent();
 
         User user = optionalUser.get();
-        User expectedUser = new User(userId, "Kai", "kai@gmail.com", "7865436549",
-                LocalDate.of(2003, 1, 18), LocalDate.now());
+        User expectedUser = new User(userId, "Kai", "Asakura", "kai@gmail.com",
+                "7865436549", LocalDate.of(2003, 1, 18), LocalDate.now());
         assertUsersAreEqual(user, expectedUser);
     }
 
@@ -104,8 +104,8 @@ public class UserRepositoryImplIntegrationTests {
     @Test
     public void testExists() {
         assertThat(underTest.exists(1)).isFalse();
-        User user = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         User createdUser = underTest.create(user);
         assertThat(underTest.exists(createdUser.id())).isTrue();
     }
@@ -115,7 +115,8 @@ public class UserRepositoryImplIntegrationTests {
     }
 
     private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.name()).isEqualTo(u2.name());
+        assertThat(u1.firstName()).isEqualTo(u2.firstName());
+        assertThat(u1.lastName()).isEqualTo(u2.lastName());
         assertThat(u1.email()).isEqualTo(u2.email());
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());

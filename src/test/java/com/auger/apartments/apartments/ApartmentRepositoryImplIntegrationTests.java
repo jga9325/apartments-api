@@ -33,10 +33,10 @@ public class ApartmentRepositoryImplIntegrationTests {
     ApartmentRepositoryImpl underTest;
 
     @Autowired
-    UserService userService;
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    UserService userService;
 
     private User user;
     private Apartment apartment1;
@@ -48,8 +48,9 @@ public class ApartmentRepositoryImplIntegrationTests {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
 
-        User newUser = new User(0, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User newUser = new User(0, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28),
+                LocalDate.now());
         user = userService.createUser(newUser);
 
         Apartment apt1 = new Apartment(null, "Main Street Condo",

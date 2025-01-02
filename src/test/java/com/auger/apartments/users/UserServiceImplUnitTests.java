@@ -29,8 +29,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testCreateUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doNothing().when(userValidator).validateNewUser(user);
         when(userRepository.create(user)).thenReturn(user);
@@ -44,8 +44,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testCreateUserDuplicateEmail() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that email already exists"))
                 .when(userValidator).validateNewUser(user);
@@ -58,8 +58,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testCreateUserDuplicatePhoneNumber() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
                 .when(userValidator).validateNewUser(user);
@@ -72,8 +72,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testGetUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         int nonExistingUserId = 2;
 
         when(userRepository.findOne(user.id())).thenReturn(Optional.of(user));
@@ -91,12 +91,12 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testGetAllUsers() {
-        User user1 = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(2, "Bob", "bob@gmail.com", "6015234567",
-                LocalDate.of(1982, 7, 14), LocalDate.now());
-        User user3 = new User(3, "Beth", "beth@gmail.com", "9876420341",
-                LocalDate.of(1990, 2, 17), LocalDate.now());
+        User user1 = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(2, "Bob", "Daly", "bob@gmail.com",
+                "6015234567", LocalDate.of(1982, 7, 14), LocalDate.now());
+        User user3 = new User(3, "Beth", "Smith", "beth@gmail.com",
+                "9876420341", LocalDate.of(1990, 2, 17), LocalDate.now());
 
         List<User> emptyList = List.of();
         List<User> userList = List.of(user1, user2, user3);
@@ -116,8 +116,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testUpdateUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
         doNothing().when(userValidator).validateExistingUser(user);
@@ -133,8 +133,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testUpdateUserDuplicateEmail() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that email already exists"))
@@ -149,8 +149,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testUpdateUserDuplicatePhoneNumber() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
@@ -165,8 +165,8 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testUpdateUserInvalidId() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(false);
 
@@ -193,7 +193,8 @@ public class UserServiceImplUnitTests {
     }
 
     private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.name()).isEqualTo(u2.name());
+        assertThat(u1.firstName()).isEqualTo(u2.firstName());
+        assertThat(u1.lastName()).isEqualTo(u2.lastName());
         assertThat(u1.email()).isEqualTo(u2.email());
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());

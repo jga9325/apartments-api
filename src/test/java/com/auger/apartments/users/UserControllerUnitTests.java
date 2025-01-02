@@ -36,8 +36,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testCreateUser() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userService.createUser(user)).thenReturn(user);
 
@@ -58,8 +58,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testCreateUserDuplicateEmail() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that email already exists"))
                 .when(userService).createUser(user);
@@ -77,8 +77,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testCreateUserDuplicatePhoneNumber() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
                 .when(userService).createUser(user);
@@ -96,8 +96,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testGetUser() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userService.getUser(user.id())).thenReturn(Optional.of(user));
 
@@ -127,12 +127,12 @@ public class UserControllerUnitTests {
 
     @Test
     public void testGetAllUsers() throws Exception {
-        User user1 = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(2, "Bob", "bob@gmail.com", "6015234567",
-                LocalDate.of(1982, 7, 14), LocalDate.now());
-        User user3 = new User(3, "Beth", "beth@gmail.com", "9876420341",
-                LocalDate.of(1990, 2, 17), LocalDate.now());
+        User user1 = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(2, "Bob", "Daly", "bob@gmail.com",
+                "6015234567", LocalDate.of(1982, 7, 14), LocalDate.now());
+        User user3 = new User(3, "Beth", "Smith", "beth@gmail.com",
+                "9876420341", LocalDate.of(1990, 2, 17), LocalDate.now());
 
         List<User> userList = List.of(user1, user2, user3);
         when(userService.getAllUsers()).thenReturn(userList);
@@ -169,8 +169,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testUpdateUser() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doNothing().when(userService).updateUser(user);
 
@@ -186,8 +186,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testUpdateUserDuplicateEmail() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that email already exists"))
                 .when(userService).updateUser(user);
@@ -205,8 +205,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testUpdateUserDuplicatePhoneNumber() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
                 .when(userService).updateUser(user);
@@ -224,8 +224,8 @@ public class UserControllerUnitTests {
 
     @Test
     public void testUpdateUserInvalidId() throws Exception {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new UserNotFoundException(String.format("User with id %s does not exist", user.id())))
                 .when(userService).updateUser(user);
@@ -243,7 +243,8 @@ public class UserControllerUnitTests {
 
 
     private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.name()).isEqualTo(u2.name());
+        assertThat(u1.firstName()).isEqualTo(u2.firstName());
+        assertThat(u1.lastName()).isEqualTo(u2.lastName());
         assertThat(u1.email()).isEqualTo(u2.email());
         assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
         assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
