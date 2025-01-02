@@ -104,8 +104,8 @@ public class ApartmentRepositoryImplIntegrationTests {
 
         List<Apartment> apartments = underTest.findAll();
 
-        assertThat(getRowCount()).isEqualTo(3);
-        assertThat(apartments.size()).isEqualTo(3);
+        assertThat(getRowCount()).isEqualTo(apartmentMap.size());
+        assertThat(apartments.size()).isEqualTo(apartmentMap.size());
 
         for (Apartment apartment : apartments) {
             Apartment createdApartment = apartmentMap.get(apartment.id());

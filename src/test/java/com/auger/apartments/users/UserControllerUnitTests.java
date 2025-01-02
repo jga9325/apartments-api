@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -185,6 +186,44 @@ public class UserControllerUnitTests {
     }
 
     @Test
+    public void testUpdateUserInvalidId() throws Exception {
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", user.id())))
+                .when(userService).updateUser(user);
+
+        String userJson = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(put("/users")
+                        .content(userJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", user.id())));
+
+        verify(userService, times(1)).updateUser(user);
+    }
+
+    @Test
+    public void testUpdateUserNullId() throws Exception {
+        User user = new User(null, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", user.id())))
+                .when(userService).updateUser(user);
+
+        String userJson = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(put("/users")
+                        .content(userJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", user.id())));
+
+        verify(userService, times(1)).updateUser(user);
+    }
+
+    @Test
     public void testUpdateUserDuplicateEmail() throws Exception {
         User user = new User(1, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
@@ -221,34 +260,4 @@ public class UserControllerUnitTests {
 
         verify(userService, times(1)).updateUser(user);
     }
-
-    @Test
-    public void testUpdateUserInvalidId() throws Exception {
-        User user = new User(1, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-
-        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", user.id())))
-                .when(userService).updateUser(user);
-
-        String userJson = objectMapper.writeValueAsString(user);
-
-        mockMvc.perform(put("/users")
-                .content(userJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(String.format("User with id %s does not exist", user.id())));
-
-        verify(userService, times(1)).updateUser(user);
-    }
-
-
-    private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.firstName()).isEqualTo(u2.firstName());
-        assertThat(u1.lastName()).isEqualTo(u2.lastName());
-        assertThat(u1.email()).isEqualTo(u2.email());
-        assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
-        assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
-        assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
-    }
-
 }

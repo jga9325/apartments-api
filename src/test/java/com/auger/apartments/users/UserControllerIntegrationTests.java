@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
@@ -38,22 +39,36 @@ public class UserControllerIntegrationTests {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    private User user1;
+    private User user2;
+    private User user3;
+
     @BeforeEach
-    public void clearTable() {
+    public void setUp() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
+
+        User u1 = new User(null, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), null);
+        User u2 = new User(null, "Bob", "Daly", "bob@gmail.com",
+                "7564839402", LocalDate.of(1985, 2, 7), null);
+        User u3 = new User(null, "Jennifer", "Lilly", "jennifer@gmail.com",
+                "1275643908", LocalDate.of(2001, 8, 15), null);
+
+        user1 = testRestTemplate.postForEntity("/users", u1, User.class).getBody();
+        user2 = testRestTemplate.postForEntity("/users", u2, User.class).getBody();
+        user3 = testRestTemplate.postForEntity("/users", u3, User.class).getBody();
     }
 
     @Test
     public void testCreateUserAndFindUser() {
-        User user = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(null, "Conrad", "Wiggins", "conrad@gmail.com",
+                "4876280912", LocalDate.of(1972, 11, 14), null);
 
         ResponseEntity<User> createdUser = testRestTemplate.postForEntity("/users", user, User.class);
 
         int userId = createdUser.getBody().id();
         assertThat(createdUser.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(userId).isNotZero();
-        assertUsersAreEqual(user, createdUser.getBody());
+        assertThat(userId).isNotNull();
 
         ResponseEntity<User> retrievedUser = testRestTemplate.getForEntity("/users/{id}", User.class, userId);
 
@@ -64,12 +79,8 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testCreateUserDuplicateEmail() {
-        User originalUser = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicateEmailUser = new User(0, "John", "Rogers", "john@gmail.com",
-                "1834276539", LocalDate.of(1999, 4, 28), LocalDate.now());
-
-        testRestTemplate.postForEntity("/users", originalUser, User.class);
+        User duplicateEmailUser = new User(null, "John", "Rogers", "john@gmail.com",
+                "1834276539", LocalDate.of(1999, 4, 28), null);
 
         ResponseEntity<String> response = testRestTemplate
                 .postForEntity("/users", duplicateEmailUser, String.class);
@@ -80,12 +91,8 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testCreateUserDuplicatePhoneNumber() {
-        User originalUser = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User duplicatePhoneNumberUser = new User(0, "John", "Rogers", "johnny@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-
-        testRestTemplate.postForEntity("/users", originalUser, User.class);
+        User duplicatePhoneNumberUser = new User(null, "John", "Rogers", "johnny@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), null);
 
         ResponseEntity<String> response = testRestTemplate
                 .postForEntity("/users", duplicatePhoneNumberUser, String.class);
@@ -96,7 +103,7 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testGetUserInvalidId() {
-        int invalidUserId = 1;
+        int invalidUserId = 0;
 
         ResponseEntity<String> response = testRestTemplate
                 .getForEntity("/users/{id}", String.class, invalidUserId);
@@ -107,21 +114,10 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testGetAllUsers() {
-        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
-                "7564839402", LocalDate.of(1985, 2, 7), LocalDate.now());
-        User user3 = new User(0, "Jennifer", "Lilly", "jennifer@gmail.com",
-                "1275643908", LocalDate.of(2001, 8, 15), LocalDate.now());
-
-        User createdUser1 = testRestTemplate.postForEntity("/users", user1, User.class).getBody();
-        User createdUser2 = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
-        User createdUser3 = testRestTemplate.postForEntity("/users", user3, User.class).getBody();
-
         Map<Integer, User> userMap = new HashMap<>();
-        userMap.put(createdUser1.id(), createdUser1);
-        userMap.put(createdUser2.id(), createdUser2);
-        userMap.put(createdUser3.id(), createdUser3);
+        userMap.put(user1.id(), user1);
+        userMap.put(user2.id(), user2);
+        userMap.put(user3.id(), user3);
 
         ResponseEntity<List<User>> users = testRestTemplate
                 .exchange("/users", HttpMethod.GET, null,
@@ -140,65 +136,19 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void testUpdateUser() {
-        User user = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-
-        User createdUser = testRestTemplate.postForEntity("/users", user, User.class).getBody();
-
-        User updatedUser = new User(createdUser.id(), "John", "Rogers", "johnny@gmail.com",
-                "7543267890", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User updatedUser = new User(user1.id(), user1.firstName(), user1.lastName(), "johnnie@gmail.com",
+                user1.phoneNumber(), user1.birthDate(), null);
 
         HttpEntity<User> requestEntity = new HttpEntity<>(updatedUser);
         ResponseEntity<Void> updateResponse = testRestTemplate
                 .exchange("/users", HttpMethod.PUT, requestEntity, Void.class);
         assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        User retrievedUser = testRestTemplate.getForEntity("/users/{id}", User.class, createdUser.id()).getBody();
-        assertUsersAreEqual(updatedUser, retrievedUser);
-    }
+        User retrievedUser = testRestTemplate.getForEntity("/users/{id}", User.class, updatedUser.id()).getBody();
 
-    @Test
-    public void testUpdateUserDuplicateEmail() {
-        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
-                "1876542567", LocalDate.of(1989, 7, 30), LocalDate.now());
-
-        testRestTemplate.postForEntity("/users", user1, User.class).getBody();
-        User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
-
-        User duplicateEmailUser = new User(createdUser.id(), "Bob", "Daly",
-                "john@gmail.com", "1876542567", LocalDate.of(1989, 7, 30),
-                LocalDate.now());
-
-        HttpEntity<User> requestEntity = new HttpEntity<>(duplicateEmailUser);
-        ResponseEntity<String> updateResponse = testRestTemplate
-                .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
-
-        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(updateResponse.getBody()).isEqualTo("A user with that email already exists");
-    }
-
-    @Test
-    public void testUpdateUserDuplicatePhoneNumber() {
-        User user1 = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(0, "Bob", "Daly", "bob@gmail.com",
-                "1876542567", LocalDate.of(1989, 7, 30), LocalDate.now());
-
-        testRestTemplate.postForEntity("/users", user1, User.class).getBody();
-        User createdUser = testRestTemplate.postForEntity("/users", user2, User.class).getBody();
-
-        User duplicatePhoneNumberUser = new User(createdUser.id(), "Bob", "Daly",
-                "bob@gmail.com", "1234567894", LocalDate.of(1989, 7, 30),
-                LocalDate.now());
-
-        HttpEntity<User> requestEntity = new HttpEntity<>(duplicatePhoneNumberUser);
-        ResponseEntity<String> updateResponse = testRestTemplate
-                .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
-
-        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(updateResponse.getBody()).isEqualTo("A user with that phone number already exists");
+        User expectedUser = new User(user1.id(), user1.firstName(), user1.lastName(), "johnnie@gmail.com",
+                user1.phoneNumber(), user1.birthDate(), user1.dateJoined());
+        assertUsersAreEqual(expectedUser, retrievedUser);
     }
 
     @Test
@@ -214,13 +164,44 @@ public class UserControllerIntegrationTests {
         assertThat(updateResponse.getBody()).isEqualTo(String.format("User with id %s does not exist", user.id()));
     }
 
-    private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.firstName()).isEqualTo(u2.firstName());
-        assertThat(u1.lastName()).isEqualTo(u2.lastName());
-        assertThat(u1.email()).isEqualTo(u2.email());
-        assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
-        assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
-        assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
+    @Test
+    public void testUpdateUserNullId() {
+        User user = new User(null, "John", "john@gmail.com", "Rogers",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        HttpEntity<User> requestEntity = new HttpEntity<>(user);
+        ResponseEntity<String> updateResponse = testRestTemplate
+                .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
+
+        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(updateResponse.getBody()).isEqualTo(String.format("User with id %s does not exist", user.id()));
     }
 
+    @Test
+    public void testUpdateUserDuplicateEmail() {
+        User duplicateEmailUser = new User(user2.id(), "Bob", "Daly",
+                "john@gmail.com", "1876542567", LocalDate.of(1989, 7, 30),
+                LocalDate.now());
+
+        HttpEntity<User> requestEntity = new HttpEntity<>(duplicateEmailUser);
+        ResponseEntity<String> updateResponse = testRestTemplate
+                .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
+
+        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(updateResponse.getBody()).isEqualTo("A user with that email already exists");
+    }
+
+    @Test
+    public void testUpdateUserDuplicatePhoneNumber() {
+        User duplicatePhoneNumberUser = new User(user2.id(), "Bob", "Daly",
+                "bob@gmail.com", "1234567894", LocalDate.of(1989, 7, 30),
+                LocalDate.now());
+
+        HttpEntity<User> requestEntity = new HttpEntity<>(duplicatePhoneNumberUser);
+        ResponseEntity<String> updateResponse = testRestTemplate
+                .exchange("/users", HttpMethod.PUT, requestEntity, String.class);
+
+        assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(updateResponse.getBody()).isEqualTo("A user with that phone number already exists");
+    }
 }

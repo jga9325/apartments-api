@@ -84,8 +84,8 @@ public class UserRepositoryImplIntegrationTests {
 
         List<User> users = underTest.findAll();
 
-        assertThat(getRowCount()).isEqualTo(3);
-        assertThat(users.size()).isEqualTo(3);
+        assertThat(getRowCount()).isEqualTo(userMap.size());
+        assertThat(users.size()).isEqualTo(userMap.size());
 
         for (User user : users) {
             User createdUser = userMap.get(user.id());
