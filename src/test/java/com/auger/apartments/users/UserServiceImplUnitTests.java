@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
@@ -29,51 +30,51 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testCreateUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
-        doNothing().when(userValidator).verifyNewUser(user);
+        doNothing().when(userValidator).validateNewUser(user);
         when(userRepository.create(user)).thenReturn(user);
 
         User createdUser = underTest.createUser(user);
 
-        verify(userValidator, times(1)).verifyNewUser(user);
+        verify(userValidator, times(1)).validateNewUser(user);
         verify(userRepository, times(1)).create(user);
         assertUsersAreEqual(user, createdUser);
     }
 
     @Test
     public void testCreateUserDuplicateEmail() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that email already exists"))
-                .when(userValidator).verifyNewUser(user);
+                .when(userValidator).validateNewUser(user);
 
         assertThatThrownBy(() -> underTest.createUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that email already exists");
-        verify(userValidator, times(1)).verifyNewUser(user);
+        verify(userValidator, times(1)).validateNewUser(user);
         verifyNoInteractions(userRepository);
     }
 
     @Test
     public void testCreateUserDuplicatePhoneNumber() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
-                .when(userValidator).verifyNewUser(user);
+                .when(userValidator).validateNewUser(user);
 
         assertThatThrownBy(() -> underTest.createUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that phone number already exists");
-        verify(userValidator, times(1)).verifyNewUser(user);
+        verify(userValidator, times(1)).validateNewUser(user);
         verifyNoInteractions(userRepository);
     }
 
     @Test
     public void testGetUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
         int nonExistingUserId = 2;
 
         when(userRepository.findOne(user.id())).thenReturn(Optional.of(user));
@@ -91,12 +92,12 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testGetAllUsers() {
-        User user1 = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
-        User user2 = new User(2, "Bob", "bob@gmail.com", "6015234567",
-                LocalDate.of(1982, 7, 14), LocalDate.now());
-        User user3 = new User(3, "Beth", "beth@gmail.com", "9876420341",
-                LocalDate.of(1990, 2, 17), LocalDate.now());
+        User user1 = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user2 = new User(2, "Bob", "Daly", "bob@gmail.com",
+                "6015234567", LocalDate.of(1982, 7, 14), LocalDate.now());
+        User user3 = new User(3, "Beth", "Smith", "beth@gmail.com",
+                "9876420341", LocalDate.of(1990, 2, 17), LocalDate.now());
 
         List<User> emptyList = List.of();
         List<User> userList = List.of(user1, user2, user3);
@@ -116,65 +117,80 @@ public class UserServiceImplUnitTests {
 
     @Test
     public void testUpdateUser() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
-        doNothing().when(userValidator).verifyExistingUser(user);
+        doNothing().when(userValidator).validateExistingUser(user);
         doNothing().when(userRepository).update(user);
 
         underTest.updateUser(user);
 
         verify(userRepository, times(1)).exists(user.id());
-        verify(userValidator, times(1)).verifyExistingUser(user);
+        verify(userValidator, times(1)).validateExistingUser(user);
         verify(userRepository, times(1)).update(user);
         assertThatNoException().isThrownBy(() -> underTest.updateUser(user));
     }
 
     @Test
     public void testUpdateUserDuplicateEmail() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that email already exists"))
-                .when(userValidator).verifyExistingUser(user);
+                .when(userValidator).validateExistingUser(user);
 
         assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that email already exists");
         verify(userRepository, times(1)).exists(user.id());
-        verify(userValidator, times(1)).verifyExistingUser(user);
+        verify(userValidator, times(1)).validateExistingUser(user);
         verify(userRepository, times(0)).update(user);
     }
 
     @Test
     public void testUpdateUserDuplicatePhoneNumber() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(true);
         doThrow(new DuplicateDataException("A user with that phone number already exists"))
-                .when(userValidator).verifyExistingUser(user);
+                .when(userValidator).validateExistingUser(user);
 
         assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that phone number already exists");
         verify(userRepository, times(1)).exists(user.id());
-        verify(userValidator, times(1)).verifyExistingUser(user);
+        verify(userValidator, times(1)).validateExistingUser(user);
         verify(userRepository, times(0)).update(user);
     }
 
     @Test
     public void testUpdateUserInvalidId() {
-        User user = new User(1, "John", "john@gmail.com", "1234567894",
-                LocalDate.of(1999, 4, 28), LocalDate.now());
+        User user = new User(1, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
 
         when(userRepository.exists(user.id())).thenReturn(false);
 
-        assertThatThrownBy(() -> underTest.updateUser(user)).isInstanceOf(UserNotFoundException.class)
+        assertThatThrownBy(() -> underTest.updateUser(user))
+                .isInstanceOf(UserNotFoundException.class)
                 .hasMessage(String.format("User with id %s does not exist", user.id()));
+
         verify(userRepository, times(1)).exists(user.id());
         verifyNoInteractions(userValidator);
         verify(userRepository, times(0)).update(user);
+    }
+
+    @Test
+    public void testUpdateUserNullId() {
+        User user = new User(null, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
+
+        assertThatThrownBy(() -> underTest.updateUser(user))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format("User with id %s does not exist", user.id()));
+
+        verifyNoInteractions(userRepository);
+        verifyNoInteractions(userValidator);
     }
 
     @Test
@@ -190,13 +206,7 @@ public class UserServiceImplUnitTests {
 
         assertThat(underTest.doesExist(nonExistingUserId)).isFalse();
         verify(userRepository, times(1)).exists(nonExistingUserId);
-    }
 
-    private void assertUsersAreEqual(User u1, User u2) {
-        assertThat(u1.name()).isEqualTo(u2.name());
-        assertThat(u1.email()).isEqualTo(u2.email());
-        assertThat(u1.phoneNumber()).isEqualTo(u2.phoneNumber());
-        assertThat(u1.birthDate()).isEqualTo(u2.birthDate());
-        assertThat(u1.dateJoined()).isEqualTo(u2.dateJoined());
+        assertThat(underTest.doesExist(null)).isFalse();
     }
 }

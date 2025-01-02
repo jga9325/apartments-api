@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(DuplicateDataException.class)
-    public ResponseEntity<?> handleDuplicateDataException(DuplicateDataException ex) {
+    public ResponseEntity<String> handleDuplicateDataException(DuplicateDataException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DatabaseException.class)
-    public ResponseEntity<?> handleDatabaseException(DatabaseException ex) {
+    public ResponseEntity<String> handleDatabaseException(DatabaseException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ApartmentNotFoundException.class)
-    public ResponseEntity<?> handleApartmentNotFoundException(ApartmentNotFoundException ex) {
+    public ResponseEntity<String> handleApartmentNotFoundException(ApartmentNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

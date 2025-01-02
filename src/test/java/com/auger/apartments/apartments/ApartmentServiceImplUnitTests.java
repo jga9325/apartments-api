@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.auger.apartments.TestUtils.assertApartmentsAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
@@ -285,21 +286,5 @@ public class ApartmentServiceImplUnitTests {
         verify(apartmentRepository, times(1)).exists(nonExistingApartmentId);
 
         assertThat(underTest.doesExist(null)).isFalse();
-    }
-
-    private void assertApartmentsAreEqual(Apartment a1, Apartment a2) {
-        assertThat(a1.id()).isEqualTo(a2.id());
-        assertThat(a1.title()).isEqualTo(a2.title());
-        assertThat(a1.description()).isEqualTo(a2.description());
-        assertThat(a1.numberOfBedrooms()).isEqualTo(a2.numberOfBedrooms());
-        assertThat(a1.numberOfBathrooms()).isEqualTo(a2.numberOfBathrooms());
-        assertThat(a1.state()).isEqualTo(a2.state());
-        assertThat(a1.city()).isEqualTo(a2.city());
-        assertThat(a1.squareFeet()).isEqualTo(a2.squareFeet());
-        assertThat(a1.monthlyRent()).isEqualTo(a2.monthlyRent());
-        assertThat(a1.dateListed()).isEqualTo(a2.dateListed());
-        assertThat(a1.available()).isEqualTo(a2.available());
-        assertThat(a1.ownerId()).isEqualTo(a2.ownerId());
-        assertThat(a1.renterId()).isEqualTo(a2.renterId());
     }
 }

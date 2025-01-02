@@ -50,7 +50,7 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
                     apartment.monthlyRent(), dateListed, apartment.available(), apartment.ownerId(),
                     apartment.renterId());
         } catch (DataAccessException ex) {
-            throw new DatabaseException("An error occurred when inserting a user in the database");
+            throw new DatabaseException("An error occurred when inserting an apartment in the database");
         }
     }
 
@@ -94,7 +94,7 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
                     apartment.ownerId(), apartment.renterId(), apartment.id()
             );
         } catch (DataAccessException ex) {
-            throw new DatabaseException("An error occurred when updating a user in the database");
+            throw new DatabaseException("An error occurred when updating an apartment in the database");
         }
     }
 

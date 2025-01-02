@@ -17,13 +17,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper userRowMapper;
-    private final UserValidator userValidator;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper, UserValidator userValidator) {
+    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.userRowMapper = userRowMapper;
-        this.userValidator = userValidator;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("users")
                 .usingGeneratedKeyColumns("id");
     }
@@ -32,14 +30,17 @@ public class UserRepositoryImpl implements UserRepository {
     public User create(User user) {
         try {
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("name", user.name());
+            parameters.put("first_name", user.firstName());
+            parameters.put("last_name", user.lastName());
             parameters.put("email", user.email());
             parameters.put("phone_number", user.phoneNumber());
             parameters.put("birth_date", user.birthDate());
-            parameters.put("date_joined", LocalDate.now());
+            LocalDate dateJoined = LocalDate.now();
+            parameters.put("date_joined", dateJoined);
 
             int id = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
-            return new User(id, user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.dateJoined());
+            return new User(id, user.firstName(), user.lastName(), user.email(), user.phoneNumber(),
+                    user.birthDate(), dateJoined);
         } catch (DataAccessException ex) {
             throw new DatabaseException("An error occurred when inserting a user in the database");
         }
@@ -69,16 +70,15 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        userValidator.verifyExistingUser(user);
         try {
             String sql = """
                 UPDATE users
-                SET name = ?, email = ?, phone_number = ?, birth_date = ?
+                SET first_name = ?, last_name = ?, email = ?, phone_number = ?, birth_date = ?
                 WHERE id = ?;
                 """;
             jdbcTemplate.update(
                     sql,
-                    user.name(), user.email(), user.phoneNumber(), user.birthDate(), user.id()
+                    user.firstName(), user.lastName(), user.email(), user.phoneNumber(), user.birthDate(), user.id()
             );
         } catch (DataAccessException ex) {
             throw new DatabaseException("An error occurred when updating a user in the database");

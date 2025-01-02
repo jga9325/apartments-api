@@ -13,17 +13,17 @@ public class UserValidator {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void verifyNewUser(User user) {
-        verifyEmailForNewUser(user.email());
-        verifyPhoneNumberForNewUser(user.phoneNumber());
+    public void validateNewUser(User user) {
+        verifyUniqueEmailForNewUser(user.email());
+        verifyUniquePhoneNumberForNewUser(user.phoneNumber());
     }
 
-    public void verifyExistingUser(User user) {
-        verifyEmailForExistingUser(user.id(), user.email());
-        verifyPhoneNumberForExistingUser(user.id(), user.phoneNumber());
+    public void validateExistingUser(User user) {
+        verifyUniqueEmailForExistingUser(user.id(), user.email());
+        verifyUniquePhoneNumberForExistingUser(user.id(), user.phoneNumber());
     }
 
-    public void verifyEmailForNewUser(String email) {
+    public void verifyUniqueEmailForNewUser(String email) {
         String sql = """
                 SELECT COUNT(*)
                 FROM users
@@ -35,7 +35,7 @@ public class UserValidator {
         }
     }
 
-    public void verifyEmailForExistingUser(int id, String email) {
+    public void verifyUniqueEmailForExistingUser(int id, String email) {
         String sql = """
                 SELECT COUNT(*)
                 FROM users
@@ -48,7 +48,7 @@ public class UserValidator {
         }
     }
 
-    public void verifyPhoneNumberForNewUser(String phoneNumber) {
+    public void verifyUniquePhoneNumberForNewUser(String phoneNumber) {
         String sql = """
                 SELECT COUNT(*)
                 FROM users
@@ -60,7 +60,7 @@ public class UserValidator {
         }
     }
 
-    public void verifyPhoneNumberForExistingUser(int id, String phoneNumber) {
+    public void verifyUniquePhoneNumberForExistingUser(int id, String phoneNumber) {
         String sql = """
                 SELECT COUNT(*)
                 FROM users
