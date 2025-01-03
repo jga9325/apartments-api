@@ -51,10 +51,10 @@ public class ApartmentControllerIntegrationTests {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
 
-        User u1 = new User(0, "John", "Rogers", "john@gmail.com",
-                "1234567894", LocalDate.of(1999, 4, 28), LocalDate.now());
-        User u2 = new User(0, "Bob", "Daly", "bob@gmail.com",
-                "8456320985", LocalDate.of(1994, 10, 11), LocalDate.now());
+        User u1 = new User(null, "John", "Rogers", "john@gmail.com",
+                "1234567894", LocalDate.of(1999, 4, 28), null);
+        User u2 = new User(null, "Bob", "Daly", "bob@gmail.com",
+                "8456320985", LocalDate.of(1994, 10, 11), null);
         user1 = testRestTemplate.postForEntity("/users", u1, User.class).getBody();
         user2 = testRestTemplate.postForEntity("/users", u2, User.class).getBody();
 

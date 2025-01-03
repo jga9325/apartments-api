@@ -1,6 +1,7 @@
 package com.auger.apartments;
 
 import com.auger.apartments.apartments.Apartment;
+import com.auger.apartments.applications.Application;
 import com.auger.apartments.users.User;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -34,5 +35,14 @@ public final class TestUtils {
         assertThat(a1.available()).isEqualTo(a2.available());
         assertThat(a1.ownerId()).isEqualTo(a2.ownerId());
         assertThat(a1.renterId()).isEqualTo(a2.renterId());
+    }
+
+    public static void assertApplicationsAreEqual(Application a1, Application a2) {
+        assertThat(a1.id()).isEqualTo(a2.id());
+        assertThat(a1.dateSubmitted()).isEqualTo(a2.dateSubmitted());
+        assertThat(a1.active()).isEqualTo(a2.active());
+        assertThat(a1.successful()).isEqualTo(a2.successful());
+        assertThat(a1.userId()).isEqualTo(a2.userId());
+        assertThat(a1.apartmentId()).isEqualTo(a2.apartmentId());
     }
 }

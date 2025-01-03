@@ -45,7 +45,7 @@ public class ApartmentRepositoryImplIntegrationTests {
     private Apartment apartment3;
 
     @BeforeEach
-    public void prepareTable() {
+    public void setUp() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
 

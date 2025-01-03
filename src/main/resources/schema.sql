@@ -33,6 +33,6 @@ CREATE TABLE applications (
     date_submitted date NOT NULL,
     active boolean NOT NULL,
     successful boolean NOT NULL,
-    apartment_id int REFERENCES apartments NOT NULL,
-    user_id int REFERENCES users NOT NULL
+    user_id int REFERENCES users NOT NULL,
+    apartment_id int REFERENCES apartments NOT NULL
 );
