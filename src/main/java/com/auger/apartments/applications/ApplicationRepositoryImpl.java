@@ -32,8 +32,8 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
             Map<String, Object> parameters = new HashMap<>();
             LocalDate dateSubmitted = LocalDate.now();
             parameters.put("date_submitted", dateSubmitted);
-            parameters.put("active", application.active());
-            parameters.put("successful", application.successful());
+            parameters.put("active", true);
+            parameters.put("successful", false);
             parameters.put("user_id", application.userId());
             parameters.put("apartment_id", application.apartmentId());
 
