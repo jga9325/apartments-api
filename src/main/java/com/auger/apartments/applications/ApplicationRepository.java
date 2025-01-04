@@ -12,5 +12,7 @@ public interface ApplicationRepository {
 
     void update(Application application);
 
+    void delete(int id);
+
     boolean exists(int id);
 }

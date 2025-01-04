@@ -159,6 +159,17 @@ public class ApplicationRepositoryImplIntegrationTests {
         assertThat(underTest.exists(application1.id())).isTrue();
     }
 
+    @Test
+    public void testDelete() {
+        assertThat(getRowCount()).isEqualTo(3);
+        assertThat(underTest.exists(application1.id())).isTrue();
+
+        underTest.delete(application1.id());
+
+        assertThat(getRowCount()).isEqualTo(2);
+        assertThat(underTest.exists(application1.id())).isFalse();
+    }
+
     private int getRowCount() {
         return JdbcTestUtils.countRowsInTable(jdbcTemplate, "applications");
     }
