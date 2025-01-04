@@ -184,7 +184,8 @@ public class ApartmentControllerUnitTests {
                 .andReturn();
 
         String responseString = result.getResponse().getContentAsString();
-        CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, Apartment.class);
+        CollectionType collectionType = objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, Apartment.class);
         List<Apartment> allApartments = objectMapper.readValue(responseString, collectionType);
 
         assertThat(allApartments).isEqualTo(apartmentList);
@@ -201,7 +202,8 @@ public class ApartmentControllerUnitTests {
                 .andReturn();
 
         String responseString = result.getResponse().getContentAsString();
-        CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, Apartment.class);
+        CollectionType collectionType = objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, Apartment.class);
         List<Apartment> emptyListResponse = objectMapper.readValue(responseString, collectionType);
 
         assertThat(emptyListResponse).isEqualTo(emptyList);

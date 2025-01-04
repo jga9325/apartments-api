@@ -6,7 +6,7 @@ spring:
       jdbc-url: jdbc:postgresql://localhost:5432/apartments-app
       username: username
       password: "password"
-      pool-size: 30
+      pool-size: 50
   sql:
     init:
       mode: always
