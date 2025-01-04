@@ -80,7 +80,7 @@ public class ApartmentControllerIntegrationTests {
     }
 
     @Test
-    public void testCreateApartmentAndFindApartment() {
+    public void testCreateApartmentAndGetApartment() {
         Apartment apartment = new Apartment(null, "Condo #5",
                 "New appliances and great views!", 2,
                 1, "NY", "New York", 800, 608900,
@@ -93,10 +93,9 @@ public class ApartmentControllerIntegrationTests {
         assertThat(apartmentId).isNotNull();
 
         ResponseEntity<Apartment> getResponse = testRestTemplate
-                .getForEntity("/apartments/{id}", Apartment.class, createResponse.getBody().id());
+                .getForEntity("/apartments/{id}", Apartment.class, apartmentId);
 
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(apartmentId).isEqualTo(getResponse.getBody().id());
         assertApartmentsAreEqual(createResponse.getBody(), getResponse.getBody());
     }
 
