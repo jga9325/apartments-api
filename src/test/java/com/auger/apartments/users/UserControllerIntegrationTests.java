@@ -1,21 +1,15 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.BaseControllerIntegrationTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -25,28 +19,14 @@ import java.util.Map;
 import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserControllerIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
-
-    @Autowired
-    TestRestTemplate testRestTemplate;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+public class UserControllerIntegrationTests extends BaseControllerIntegrationTest {
 
     private User user1;
     private User user2;
     private User user3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User u1 = new User(null, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), null);
         User u2 = new User(null, "Bob", "Daly", "bob@gmail.com",
@@ -57,6 +37,11 @@ public class UserControllerIntegrationTests {
         user1 = testRestTemplate.postForEntity("/users", u1, User.class).getBody();
         user2 = testRestTemplate.postForEntity("/users", u2, User.class).getBody();
         user3 = testRestTemplate.postForEntity("/users", u3, User.class).getBody();
+    }
+
+    @AfterEach
+    public void clearTable() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test

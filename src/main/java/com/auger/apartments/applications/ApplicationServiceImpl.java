@@ -46,6 +46,17 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    public void deleteApplication(int id) {
+        if (doesExist(id)) {
+            applicationRepository.delete(id);
+        } else {
+            throw new ApplicationNotFoundException(
+                    String.format("Application with id %s does not exist", id)
+            );
+        }
+    }
+
+    @Override
     public boolean doesExist(Integer id) {
         if (id == null) {
             return false;

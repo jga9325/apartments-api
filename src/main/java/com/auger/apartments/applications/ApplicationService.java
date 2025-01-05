@@ -12,5 +12,7 @@ public interface ApplicationService {
 
     void updateApplication(Application application);
 
+    void deleteApplication(int id);
+
     boolean doesExist(Integer id);
 }

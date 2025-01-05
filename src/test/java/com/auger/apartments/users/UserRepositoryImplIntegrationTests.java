@@ -1,15 +1,11 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.BaseIntegrationTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -20,28 +16,17 @@ import java.util.Optional;
 import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest
-public class UserRepositoryImplIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
+public class UserRepositoryImplIntegrationTests extends BaseIntegrationTest {
 
     @Autowired
     UserRepositoryImpl underTest;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     private User user1;
     private User user2;
     private User user3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User u1 = new User(null, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), null);
         User u2 = new User(null, "Jennifer", "Lilly", "jennifer@gmail.com",
@@ -51,6 +36,11 @@ public class UserRepositoryImplIntegrationTests {
         user1 = underTest.create(u1);
         user2 = underTest.create(u2);
         user3 = underTest.create(u3);
+    }
+
+    @AfterEach
+    public void clearTable() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test

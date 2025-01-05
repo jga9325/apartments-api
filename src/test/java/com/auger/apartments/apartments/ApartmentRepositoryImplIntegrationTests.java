@@ -1,17 +1,12 @@
 package com.auger.apartments.apartments;
 
+import com.auger.apartments.BaseIntegrationTest;
 import com.auger.apartments.users.User;
-import com.auger.apartments.users.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,22 +17,10 @@ import java.util.Optional;
 import static com.auger.apartments.TestUtils.assertApartmentsAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest
-public class ApartmentRepositoryImplIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
+public class ApartmentRepositoryImplIntegrationTests extends BaseIntegrationTest {
 
     @Autowired
     ApartmentRepositoryImpl underTest;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    UserService userService;
 
     private User user;
     private Apartment apartment1;
@@ -45,10 +28,7 @@ public class ApartmentRepositoryImplIntegrationTests {
     private Apartment apartment3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User newUser = new User(null, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28),
                 null);
@@ -69,6 +49,12 @@ public class ApartmentRepositoryImplIntegrationTests {
         apartment1 = underTest.create(apt1);
         apartment2 = underTest.create(apt2);
         apartment3 = underTest.create(apt3);
+    }
+
+    @AfterEach
+    public void clearTables() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test

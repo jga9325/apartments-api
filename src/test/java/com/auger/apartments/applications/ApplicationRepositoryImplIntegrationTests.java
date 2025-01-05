@@ -1,19 +1,13 @@
 package com.auger.apartments.applications;
 
+import com.auger.apartments.BaseIntegrationTest;
 import com.auger.apartments.apartments.Apartment;
-import com.auger.apartments.apartments.ApartmentService;
 import com.auger.apartments.users.User;
-import com.auger.apartments.users.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -24,25 +18,10 @@ import java.util.Optional;
 import static com.auger.apartments.TestUtils.assertApplicationsAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest
-public class ApplicationRepositoryImplIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
+public class ApplicationRepositoryImplIntegrationTests extends BaseIntegrationTest {
 
     @Autowired
     ApplicationRepositoryImpl underTest;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    ApartmentService apartmentService;
 
     private User user1;
     private User user2;
@@ -54,11 +33,7 @@ public class ApplicationRepositoryImplIntegrationTests {
     private Application application3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "applications");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User u1 = new User(0, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), null);
         User u2 = new User(0, "Bob", "Daly", "bob@gmail.com",
@@ -91,6 +66,13 @@ public class ApplicationRepositoryImplIntegrationTests {
         application1 = underTest.create(app1);
         application2 = underTest.create(app2);
         application3 = underTest.create(app3);
+    }
+
+    @AfterEach
+    public void clearTables() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "applications");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test

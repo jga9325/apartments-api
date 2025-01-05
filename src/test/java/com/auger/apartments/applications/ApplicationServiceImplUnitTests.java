@@ -175,4 +175,29 @@ public class ApplicationServiceImplUnitTests {
 
         assertThat(underTest.doesExist(null)).isFalse();
     }
+
+    @Test
+    public void testDeleteApplication() {
+        int validApplicationId = 1;
+
+        when(applicationRepository.exists(validApplicationId)).thenReturn(true);
+        doNothing().when(applicationRepository).delete(validApplicationId);
+
+        assertThatNoException().isThrownBy(() -> underTest.deleteApplication(validApplicationId));
+        verify(applicationRepository, times(1)).exists(validApplicationId);
+        verify(applicationRepository, times(1)).delete(validApplicationId);
+    }
+
+    @Test
+    public void testDeleteApplicationInvalidId() {
+        int invalidApplicationId = 2;
+
+        when(applicationRepository.exists(invalidApplicationId)).thenReturn(false);
+
+        assertThatThrownBy(() -> underTest.deleteApplication(invalidApplicationId))
+                .isInstanceOf(ApplicationNotFoundException.class)
+                .hasMessage(String.format("Application with id %s does not exist", invalidApplicationId));
+        verify(applicationRepository, times(1)).exists(invalidApplicationId);
+        verify(applicationRepository, times(0)).delete(invalidApplicationId);
+    }
 }
