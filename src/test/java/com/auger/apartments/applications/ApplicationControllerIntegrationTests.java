@@ -1,23 +1,17 @@
 package com.auger.apartments.applications;
 
+import com.auger.apartments.BaseControllerIntegrationTest;
 import com.auger.apartments.apartments.Apartment;
 import com.auger.apartments.users.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -27,19 +21,7 @@ import java.util.Map;
 import static com.auger.apartments.TestUtils.assertApplicationsAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ApplicationControllerIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
-
-    @Autowired
-    TestRestTemplate testRestTemplate;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+public class ApplicationControllerIntegrationTests extends BaseControllerIntegrationTest {
 
     private User user1;
     private User user2;
@@ -51,11 +33,7 @@ public class ApplicationControllerIntegrationTests {
     private Application application3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "applications");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User u1 = new User(0, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), null);
         User u2 = new User(0, "Bob", "Daly", "bob@gmail.com",
@@ -90,6 +68,13 @@ public class ApplicationControllerIntegrationTests {
         application1 = testRestTemplate.postForEntity("/applications", app1, Application.class).getBody();
         application2 = testRestTemplate.postForEntity("/applications", app2, Application.class).getBody();
         application3 = testRestTemplate.postForEntity("/applications", app3, Application.class).getBody();
+    }
+
+    @AfterEach
+    public void clearTables() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "applications");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test
@@ -211,5 +196,32 @@ public class ApplicationControllerIntegrationTests {
         assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(updateResponse.getBody())
                 .isEqualTo(String.format("Application with id %s does not exist", updatedApplication.id()));
+    }
+
+    @Test
+    public void testDeleteApplication() {
+        ResponseEntity<Void> deleteResponse = testRestTemplate
+                .exchange("/applications/{id}", HttpMethod.DELETE, null, Void.class, application1.id());
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<String> getResponse = testRestTemplate
+                .getForEntity("/applications/{id}", String.class, application1.id());
+
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(getResponse.getBody())
+                .isEqualTo(String.format("Application with id %s does not exist", application1.id()));
+    }
+
+    @Test
+    public void testDeleteApplicationInvalidId() {
+        int invalidApplicationId = 0;
+
+        ResponseEntity<String> deleteResponse = testRestTemplate.exchange("/applications/{id}", HttpMethod.DELETE,
+                null, String.class, invalidApplicationId);
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(deleteResponse.getBody())
+                .isEqualTo(String.format("Application with id %s does not exist", invalidApplicationId));
     }
 }

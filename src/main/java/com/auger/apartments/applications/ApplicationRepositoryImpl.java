@@ -86,6 +86,19 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
     }
 
     @Override
+    public void delete(int id) {
+        try {
+            String sql = """
+                DELETE FROM applications
+                WHERE id = ?;
+                """;
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException ex) {
+            throw new DatabaseException("An error occurred when deleting an application in the database");
+        }
+    }
+
+    @Override
     public boolean exists(int id) {
         String sql = """
                 SELECT COUNT(*)

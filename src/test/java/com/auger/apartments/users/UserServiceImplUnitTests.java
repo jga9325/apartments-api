@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -208,5 +209,76 @@ public class UserServiceImplUnitTests {
         verify(userRepository, times(1)).exists(nonExistingUserId);
 
         assertThat(underTest.doesExist(null)).isFalse();
+    }
+
+    @Test
+    public void testDeleteUser() {
+        int userId = 1;
+
+        when(userRepository.exists(userId)).thenReturn(true);
+        doNothing().when(userValidator).validateUserDeletion(userId);
+        doNothing().when(userRepository).delete(userId);
+
+        assertThatNoException().isThrownBy(() -> underTest.deleteUser(userId));
+
+        verify(userRepository, times(1)).exists(userId);
+        verify(userValidator, times(1)).validateUserDeletion(userId);
+        verify(userRepository, times(1)).delete(userId);
+    }
+
+    @Test
+    public void testDeleteUserInvalidId() {
+        int invalidUserId = 2;
+
+        when(userRepository.exists(invalidUserId)).thenReturn(false);
+
+        assertThatThrownBy(() -> underTest.deleteUser(invalidUserId))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format("User with id %s does not exist", invalidUserId));
+
+        verify(userRepository, times(1)).exists(invalidUserId);
+        verifyNoInteractions(userValidator);
+        verify(userRepository, times(0)).delete(invalidUserId);
+    }
+
+    @Test
+    public void testDeleteUserIsRenter() {
+        int userRenterId = 3;
+
+        when(userRepository.exists(userRenterId)).thenReturn(true);
+
+        doThrow(new DeleteApartmentException(
+                String.format("Unable to delete user with id %s because they are renting an apartment", userRenterId)
+                )).when(userValidator).validateUserDeletion(userRenterId);
+
+        assertThatThrownBy(() -> underTest.deleteUser(userRenterId))
+                .isInstanceOf(DeleteApartmentException.class)
+                .hasMessage(String.format(
+                        "Unable to delete user with id %s because they are renting an apartment", userRenterId));
+
+        verify(userRepository, times(1)).exists(userRenterId);
+        verify(userValidator, times(1)).validateUserDeletion(userRenterId);
+        verify(userRepository, times(0)).delete(userRenterId);
+    }
+
+    @Test
+    public void testDeleteUserOwnsOccupiedApartment() {
+        int userOwnerId = 4;
+
+        when(userRepository.exists(userOwnerId)).thenReturn(true);
+
+        doThrow(new DeleteApartmentException(String.format(
+                        "Unable to delete user with id %s because they own at least one occupied apartment",
+                userOwnerId))).when(userValidator).validateUserDeletion(userOwnerId);
+
+        assertThatThrownBy(() -> underTest.deleteUser(userOwnerId))
+                .isInstanceOf(DeleteApartmentException.class)
+                .hasMessage(String.format(
+                        "Unable to delete user with id %s because they own at least one occupied apartment",
+                        userOwnerId));
+
+        verify(userRepository, times(1)).exists(userOwnerId);
+        verify(userValidator, times(1)).validateUserDeletion(userOwnerId);
+        verify(userRepository, times(0)).delete(userOwnerId);
     }
 }

@@ -99,6 +99,19 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
     }
 
     @Override
+    public void delete(int id) {
+        try {
+            String sql = """
+                DELETE FROM apartments
+                WHERE id = ?;
+                """;
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException ex) {
+            throw new DatabaseException("An error occurred when deleting an apartment in the database");
+        }
+    }
+
+    @Override
     public boolean exists(int id) {
         String sql = """
                 SELECT COUNT(*)

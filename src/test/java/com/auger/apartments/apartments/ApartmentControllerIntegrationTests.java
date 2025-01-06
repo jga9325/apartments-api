@@ -1,22 +1,17 @@
 package com.auger.apartments.apartments;
 
+import com.auger.apartments.BaseControllerIntegrationTest;
+import com.auger.apartments.applications.Application;
 import com.auger.apartments.users.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -26,37 +21,26 @@ import java.util.Map;
 import static com.auger.apartments.TestUtils.assertApartmentsAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ApartmentControllerIntegrationTests {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.2-alpine");
-
-    @Autowired
-    TestRestTemplate testRestTemplate;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+public class ApartmentControllerIntegrationTests extends BaseControllerIntegrationTest {
 
     private User user1;
     private User user2;
+    private User user3;
     private Apartment apartment1;
     private Apartment apartment2;
     private Apartment apartment3;
 
     @BeforeEach
-    public void setUp() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-
+    public void addData() {
         User u1 = new User(null, "John", "Rogers", "john@gmail.com",
                 "1234567894", LocalDate.of(1999, 4, 28), null);
         User u2 = new User(null, "Bob", "Daly", "bob@gmail.com",
                 "8456320985", LocalDate.of(1994, 10, 11), null);
+        User u3 = new User(null, "Jennifer", "Lilly", "jennifer@gmail.com",
+                "1275643908", LocalDate.of(2001, 8, 15), null);
         user1 = testRestTemplate.postForEntity("/users", u1, User.class).getBody();
         user2 = testRestTemplate.postForEntity("/users", u2, User.class).getBody();
+        user3 = testRestTemplate.postForEntity("/users", u3, User.class).getBody();
 
         Apartment apt1 = new Apartment(null, "Main Street Condo",
                 "A spacious condo with brand new appliances and great views!", 2,
@@ -77,6 +61,12 @@ public class ApartmentControllerIntegrationTests {
                 .getBody();
         apartment3 = testRestTemplate.postForEntity("/apartments", apt3, Apartment.class)
                 .getBody();
+    }
+
+    @AfterEach
+    public void clearTables() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "apartments");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test
@@ -284,5 +274,76 @@ public class ApartmentControllerIntegrationTests {
                     A user with id %s is renting a different apartment.
                     A user can only rent one apartment at a time.
                     """, updatedApartment.renterId()));
+    }
+
+    @Test
+    public void testDeleteApartment() {
+        ResponseEntity<Void> deleteResponse = testRestTemplate
+                .exchange("/apartments/{id}", HttpMethod.DELETE, null, Void.class, apartment3.id());
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<String> getResponse = testRestTemplate
+                .getForEntity("/apartments/{id}", String.class, apartment3.id());
+
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(getResponse.getBody())
+                .isEqualTo(String.format("Apartment with id %s does not exist", apartment3.id()));
+    }
+
+    @Test
+    public void testDeleteApartmentInvalidId() {
+        int invalidApartmentId = 0;
+
+        ResponseEntity<String> deleteResponse = testRestTemplate.exchange("/apartments/{id}", HttpMethod.DELETE,
+                null, String.class, invalidApartmentId);
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(deleteResponse.getBody())
+                .isEqualTo(String.format("Apartment with id %s does not exist", invalidApartmentId));
+    }
+
+    @Test
+    public void testDeleteApartmentOccupiedApartment() {
+        ResponseEntity<String> deleteResponse = testRestTemplate.exchange("/apartments/{id}", HttpMethod.DELETE,
+                null, String.class, apartment1.id());
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(deleteResponse.getBody())
+                .isEqualTo(String.format(
+                        "Unable to delete apartment with id %s because it is occupied", apartment1.id()));
+    }
+
+    @Test
+    public void testDeleteApartmentWithApplications() {
+        Application app1 = new Application(null, null, true, false,
+                user2.id(), apartment3.id());
+        Application app2 = new Application(null, null, true, false,
+                user3.id(), apartment3.id());
+        Application application1 = testRestTemplate
+                .postForEntity("/applications", app1, Application.class).getBody();
+        Application application2 = testRestTemplate
+                .postForEntity("/applications", app2, Application.class).getBody();
+
+        List<Integer> applicationIdList = List.of(application1.id(), application2.id());
+
+        for (Integer applicationId : applicationIdList) {
+            ResponseEntity<Application> getResponse = testRestTemplate
+                    .getForEntity("/applications/{id}", Application.class, applicationId);
+            assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+
+        ResponseEntity<Void> deleteResponse = testRestTemplate
+                .exchange("/apartments/{id}", HttpMethod.DELETE, null, Void.class, apartment3.id());
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        for (Integer applicationId : applicationIdList) {
+            ResponseEntity<String> getResponse = testRestTemplate
+                    .getForEntity("/applications/{id}", String.class, applicationId);
+            assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(getResponse.getBody())
+                    .isEqualTo(String.format("Application with id %s does not exist", applicationId));
+        }
     }
 }

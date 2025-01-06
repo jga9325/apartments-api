@@ -24,7 +24,7 @@ CREATE TABLE apartments (
     monthly_rent integer NOT NULL,
     date_listed date NOT NULL,
     available boolean NOT NULL,
-    owner_id integer REFERENCES users NOT NULL,
+    owner_id integer REFERENCES users ON DELETE CASCADE NOT NULL,
     renter_id integer REFERENCES users UNIQUE
 );
 
@@ -33,6 +33,6 @@ CREATE TABLE applications (
     date_submitted date NOT NULL,
     active boolean NOT NULL,
     successful boolean NOT NULL,
-    user_id int REFERENCES users NOT NULL,
-    apartment_id int REFERENCES apartments NOT NULL
+    user_id int REFERENCES users ON DELETE CASCADE NOT NULL,
+    apartment_id int REFERENCES apartments ON DELETE CASCADE NOT NULL
 );

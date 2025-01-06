@@ -86,6 +86,19 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public void delete(int id) {
+        try {
+            String sql = """
+                DELETE FROM users
+                WHERE id = ?;
+                """;
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException ex) {
+            throw new DatabaseException("An error occurred when deleting a user in the database");
+        }
+    }
+
+    @Override
     public boolean exists(int id) {
         String sql = """
                 SELECT COUNT(*)

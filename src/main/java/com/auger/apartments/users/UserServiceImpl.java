@@ -44,6 +44,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUser(int id) {
+        if (doesExist(id)) {
+            userValidator.validateUserDeletion(id);
+            userRepository.delete(id);
+        } else {
+            throw new UserNotFoundException(String.format("User with id %s does not exist", id));
+        }
+    }
+
+    @Override
     public boolean doesExist(Integer id) {
         if (id == null) {
             return false;

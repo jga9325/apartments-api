@@ -44,6 +44,16 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public void deleteApartment(int id) {
+        if (doesExist(id)) {
+            apartmentValidator.validateApartmentDeletion(id);
+            apartmentRepository.delete(id);
+        } else {
+            throw new ApartmentNotFoundException(String.format("Apartment with id %s does not exist", id));
+        }
+    }
+
+    @Override
     public boolean doesExist(Integer id) {
         if (id == null) {
             return false;
