@@ -362,7 +362,8 @@ public class ApartmentControllerUnitTests {
         )).when(apartmentService).deleteApartment(invalidApartmentId);
 
         mockMvc.perform(delete("/apartments/{id}", invalidApartmentId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("Apartment with id %s does not exist", invalidApartmentId)));
 
         verify(apartmentService, times(1)).deleteApartment(invalidApartmentId);
     }
@@ -378,7 +379,10 @@ public class ApartmentControllerUnitTests {
         )).when(apartmentService).deleteApartment(occupiedApartment);
 
         mockMvc.perform(delete("/apartments/{id}", occupiedApartment))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(content().string(String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, occupiedApartment)));
 
         verify(apartmentService, times(1)).deleteApartment(occupiedApartment);
     }

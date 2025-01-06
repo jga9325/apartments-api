@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -259,5 +260,64 @@ public class UserControllerUnitTests {
                 .andExpect(content().string("A user with that phone number already exists"));
 
         verify(userService, times(1)).updateUser(user);
+    }
+
+    @Test
+    public void testDeleteUser() throws Exception {
+        int userId = 1;
+
+        doNothing().when(userService).deleteUser(userId);
+
+        mockMvc.perform(delete("/users/{id}", userId))
+                .andExpect(status().isNoContent());
+
+        verify(userService, times(1)).deleteUser(userId);
+    }
+
+    @Test
+    public void testDeleteUserInvalidId() throws Exception {
+        int invalidUserId = 1;
+
+        doThrow(new UserNotFoundException(String.format("User with id %s does not exist", invalidUserId)))
+                .when(userService).deleteUser(invalidUserId);
+
+        mockMvc.perform(delete("/users/{id}", invalidUserId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(String.format("User with id %s does not exist", invalidUserId)));
+
+        verify(userService, times(1)).deleteUser(invalidUserId);
+    }
+
+    @Test
+    public void testDeleteUserIsRenter() throws Exception {
+        int userRenterId = 1;
+
+        doThrow(new DeleteApartmentException(String.format(
+                "Unable to delete user with id %s because they are renting an apartment", userRenterId)
+        )).when(userService).deleteUser(userRenterId);
+
+        mockMvc.perform(delete("/users/{id}", userRenterId))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(String.format(
+                        "Unable to delete user with id %s because they are renting an apartment", userRenterId)));
+
+        verify(userService, times(1)).deleteUser(userRenterId);
+    }
+
+    @Test
+    public void testDeleteUserOwnsOccupiedApartment() throws Exception {
+        int userOwnerId = 1;
+
+        doThrow(new DeleteApartmentException(String.format(
+                "Unable to delete user with id %s because they own at least one occupied apartment", userOwnerId)
+        )).when(userService).deleteUser(userOwnerId);
+
+        mockMvc.perform(delete("/users/{id}", userOwnerId))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(String.format(
+                        "Unable to delete user with id %s because they own at least one occupied apartment",
+                        userOwnerId)));
+
+        verify(userService, times(1)).deleteUser(userOwnerId);
     }
 }

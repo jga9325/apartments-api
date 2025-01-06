@@ -37,4 +37,9 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<String> handleDeleteApartmentException(DeleteApartmentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(DeleteUserException.class)
+    public ResponseEntity<String> handleDeleteUserException(DeleteUserException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }
