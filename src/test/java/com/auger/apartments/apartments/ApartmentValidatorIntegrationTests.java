@@ -232,8 +232,7 @@ public class ApartmentValidatorIntegrationTests extends BaseIntegrationTest {
 
         assertThatThrownBy(() -> underTest.validateApartmentDeletion(apartment2.id()))
                 .isInstanceOf(DeleteApartmentException.class)
-                .hasMessage(String.format("""
-                    Unable to delete apartment with id %s because it is occupied
-                    """, apartment2.id()));
+                .hasMessage(String.format(
+                        "Unable to delete apartment with id %s because it is occupied", apartment2.id()));
     }
 }

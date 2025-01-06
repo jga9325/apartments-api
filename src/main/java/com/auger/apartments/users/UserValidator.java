@@ -1,5 +1,6 @@
 package com.auger.apartments.users;
 
+import com.auger.apartments.exceptions.DeleteUserException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,39 @@ public class UserValidator {
         int duplicatePhoneNumberCount = jdbcTemplate.queryForObject(sql, Integer.class, id, phoneNumber);
         if (duplicatePhoneNumberCount > 0) {
             throw new DuplicateDataException("A user with that phone number already exists");
+        }
+    }
+
+    public void validateUserDeletion(int id) {
+        verifyUserIsNotRenting(id);
+        verifyOwnedApartmentsAreVacant(id);
+    }
+
+    private void verifyUserIsNotRenting(int id) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM apartments
+                WHERE renter_id = ?;
+                """;
+        int apartmentCount = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        if (apartmentCount > 0) {
+            throw new DeleteUserException(
+                    String.format("Unable to delete user with id %s because they are renting an apartment", id)
+            );
+        }
+    }
+
+    private void verifyOwnedApartmentsAreVacant(int id) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM apartments
+                WHERE owner_id = ?
+                AND renter_id IS NOT NULL;
+                """;
+        int occupiedApartments = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        if (occupiedApartments > 0) {
+            throw new DeleteUserException(String.format(
+                    "Unable to delete user with id %s because they own at least one occupied apartment", id));
         }
     }
 }

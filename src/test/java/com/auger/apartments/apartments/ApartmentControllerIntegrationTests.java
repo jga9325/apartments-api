@@ -310,9 +310,8 @@ public class ApartmentControllerIntegrationTests extends BaseControllerIntegrati
 
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(deleteResponse.getBody())
-                .isEqualTo(String.format("""
-                    Unable to delete apartment with id %s because it is occupied
-                    """, apartment1.id()));
+                .isEqualTo(String.format(
+                        "Unable to delete apartment with id %s because it is occupied", apartment1.id()));
     }
 
     @Test

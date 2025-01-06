@@ -107,7 +107,7 @@ public class ApartmentRepositoryImpl implements ApartmentRepository {
                 """;
             jdbcTemplate.update(sql, id);
         } catch (DataAccessException ex) {
-            throw new DatabaseException("An error occurred when updating an apartment in the database");
+            throw new DatabaseException("An error occurred when deleting an apartment in the database");
         }
     }
 

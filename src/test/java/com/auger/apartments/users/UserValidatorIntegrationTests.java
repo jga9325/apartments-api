@@ -1,6 +1,8 @@
 package com.auger.apartments.users;
 
 import com.auger.apartments.BaseIntegrationTest;
+import com.auger.apartments.apartments.Apartment;
+import com.auger.apartments.exceptions.DeleteUserException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,5 +146,39 @@ public class UserValidatorIntegrationTests extends BaseIntegrationTest {
         assertThatThrownBy(() -> underTest.validateExistingUser(duplicatePhoneNumberUser))
                 .isInstanceOf(DuplicateDataException.class)
                 .hasMessage("A user with that phone number already exists");
+    }
+
+    @Test
+    public void testValidateUserDeletion() {
+        assertThatNoException().isThrownBy(() -> underTest.validateUserDeletion(user1.id()));
+    }
+
+    @Test
+    public void testValidateUserDeletionForRenter() {
+        Apartment apt1 = new Apartment(null, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, user1.id(), user2.id());
+        apartmentRepository.create(apt1);
+
+        assertThatThrownBy(() -> underTest.validateUserDeletion(user2.id()))
+                .isInstanceOf(DeleteUserException.class)
+                .hasMessage(String.format(
+                        "Unable to delete user with id %s because they are renting an apartment", user2.id()));
+    }
+
+    @Test
+    public void testValidateUserDeletionOccupiedApartment() {
+        Apartment apt1 = new Apartment(null, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, user1.id(), user2.id());
+        apartmentRepository.create(apt1);
+
+        assertThatThrownBy(() -> underTest.validateUserDeletion(user1.id()))
+                .isInstanceOf(DeleteUserException.class)
+                .hasMessage(String.format(
+                        "Unable to delete user with id %s because they own at least one occupied apartment",
+                        user1.id()));
     }
 }

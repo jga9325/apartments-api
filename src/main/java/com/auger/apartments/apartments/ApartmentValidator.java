@@ -86,9 +86,9 @@ public class ApartmentValidator {
                 """;
         int occupiedApartments = jdbcTemplate.queryForObject(sql, Integer.class, apartmentId);
         if (occupiedApartments > 0) {
-            throw new DeleteApartmentException(String.format("""
-                    Unable to delete apartment with id %s because it is occupied
-                    """, apartmentId));
+            throw new DeleteApartmentException(
+                    String.format("Unable to delete apartment with id %s because it is occupied", apartmentId)
+            );
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.auger.apartments.users;
 
 import com.auger.apartments.BaseIntegrationTest;
+import com.auger.apartments.apartments.Apartment;
+import com.auger.apartments.applications.Application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,14 +105,67 @@ public class UserRepositoryImplIntegrationTests extends BaseIntegrationTest {
         assertUsersAreEqual(retrievedUser, expectedUser);
     }
 
-    // Delete - Create a user, delete it, and check that it isn't there
-
-    // Delete - Delete invalid id and verify exception
-
     @Test
     public void testExists() {
         assertThat(underTest.exists(0)).isFalse();
         assertThat(underTest.exists(user1.id())).isTrue();
+    }
+
+    @Test
+    public void testDelete() {
+        assertThat(getRowCount()).isEqualTo(3);
+        assertThat(underTest.exists(user1.id())).isTrue();
+
+        underTest.delete(user1.id());
+
+        assertThat(getRowCount()).isEqualTo(2);
+        assertThat(underTest.exists(user1.id())).isFalse();
+    }
+
+    @Test
+    public void testDeleteWithApartmentsAndApplications() {
+        Apartment apt1 = new Apartment(null, "Main Street Condo",
+                "A spacious condo with brand new appliances and great views!", 2,
+                1, "NY", "New York", 800, 608900,
+                null, true, user1.id(), null);
+        Apartment apt2 = new Apartment(null, "Suburban Getaway",
+                "Entire unit in a quiet neighborhood", 3,
+                2, "VA", "Norfolk", 1400, 310000,
+                null, true, user1.id(), null);
+        Apartment apt3 = new Apartment(null, "Beach Apartment",
+                "One bed one bath apartment near the beach!", 1,
+                1, "FL", "Miami", 800, 185000,
+                null, true, user2.id(), null);
+        Apartment apartment1 = apartmentService.createApartment(apt1);
+        Apartment apartment2 = apartmentService.createApartment(apt2);
+        Apartment apartment3 = apartmentService.createApartment(apt3);
+
+        Application app1 = new Application(null, null, true, false,
+                user1.id(), apartment3.id());
+        Application app2 = new Application(null, null, true, false,
+                user2.id(), apartment1.id());
+        Application app3 = new Application(null, null, true, false,
+                user3.id(), apartment1.id());
+        Application app4 = new Application(null, null, true, false,
+                user2.id(), apartment2.id());
+        Application app5 = new Application(null, null, true, false,
+                user3.id(), apartment2.id());
+
+        applicationService.createApplication(app1);
+        applicationService.createApplication(app2);
+        applicationService.createApplication(app3);
+        applicationService.createApplication(app4);
+        applicationService.createApplication(app5);
+
+        assertThat(getRowCount()).isEqualTo(3);
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "apartments")).isEqualTo(3);
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "applications")).isEqualTo(5);
+
+        underTest.delete(user1.id());
+
+        assertThat(getRowCount()).isEqualTo(2);
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "apartments")).isEqualTo(1);
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "applications")).isEqualTo(0);
     }
 
     private int getRowCount() {
