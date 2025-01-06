@@ -1,6 +1,7 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.exceptions.ApartmentNotFoundException;
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -338,5 +339,47 @@ public class ApartmentControllerUnitTests {
                     """, apartment.renterId())));
 
         verify(apartmentService, times(1)).updateApartment(apartment);
+    }
+
+    @Test
+    public void testDeleteApartment() throws Exception {
+        int apartmentId = 1;
+
+        doNothing().when(apartmentService).deleteApartment(apartmentId);
+
+        mockMvc.perform(delete("/apartments/{id}", apartmentId))
+                .andExpect(status().isNoContent());
+
+        verify(apartmentService, times(1)).deleteApartment(apartmentId);
+    }
+
+    @Test
+    public void testDeleteApartmentInvalidId() throws Exception {
+        int invalidApartmentId = 1;
+
+        doThrow(new ApartmentNotFoundException(
+                String.format("Apartment with id %s does not exist", invalidApartmentId)
+        )).when(apartmentService).deleteApartment(invalidApartmentId);
+
+        mockMvc.perform(delete("/apartments/{id}", invalidApartmentId))
+                .andExpect(status().isNotFound());
+
+        verify(apartmentService, times(1)).deleteApartment(invalidApartmentId);
+    }
+
+    @Test
+    public void testDeleteApartmentOccupiedApartment() throws Exception {
+        int occupiedApartment = 1;
+
+        doThrow(new DeleteApartmentException(
+                String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, occupiedApartment)
+        )).when(apartmentService).deleteApartment(occupiedApartment);
+
+        mockMvc.perform(delete("/apartments/{id}", occupiedApartment))
+                .andExpect(status().isConflict());
+
+        verify(apartmentService, times(1)).deleteApartment(occupiedApartment);
     }
 }

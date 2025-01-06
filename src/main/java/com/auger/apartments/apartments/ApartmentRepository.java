@@ -12,5 +12,7 @@ public interface ApartmentRepository {
 
     void update(Apartment apartment);
 
+    void delete(int id);
+
     boolean exists(int id);
 }

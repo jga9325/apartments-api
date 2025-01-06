@@ -1,6 +1,7 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.BaseIntegrationTest;
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.auger.apartments.users.User;
@@ -25,6 +26,7 @@ public class ApartmentValidatorIntegrationTests extends BaseIntegrationTest {
     private User user3;
     private Apartment apartment1;
     private Apartment apartment2;
+    private Apartment apartment3;
 
     @BeforeEach
     public void addData() {
@@ -46,8 +48,13 @@ public class ApartmentValidatorIntegrationTests extends BaseIntegrationTest {
                 "Studio space in downtown Manhattan. Great location", 0,
                 1, "NY", "New York", 400, 280000,
                 null, true, user1.id(), user3.id());
+        Apartment apt3 = new Apartment(null, "Beach Retreat",
+                "Lovely escape from city life!", 2,
+                2, "Fl", "Key West", 2100, 250000,
+                null, true, user1.id(), null);
         apartment1 = apartmentRepository.create(apt1);
         apartment2 = apartmentRepository.create(apt2);
+        apartment3 = apartmentRepository.create(apt3);
     }
 
     @AfterEach
@@ -217,5 +224,16 @@ public class ApartmentValidatorIntegrationTests extends BaseIntegrationTest {
         assertThatThrownBy(() -> underTest.validateExistingApartment(updatedApartment))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage(String.format("User with id %s does not exist", updatedApartment.renterId()));
+    }
+
+    @Test
+    public void testValidateApartmentDeletion() {
+        assertThatNoException().isThrownBy(() -> underTest.validateApartmentDeletion(apartment3.id()));
+
+        assertThatThrownBy(() -> underTest.validateApartmentDeletion(apartment2.id()))
+                .isInstanceOf(DeleteApartmentException.class)
+                .hasMessage(String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, apartment2.id()));
     }
 }

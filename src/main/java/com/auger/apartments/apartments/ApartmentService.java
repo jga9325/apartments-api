@@ -12,5 +12,7 @@ public interface ApartmentService {
 
     void updateApartment(Apartment apartment);
 
+    void deleteApartment(int id);
+
     boolean doesExist(Integer id);
 }

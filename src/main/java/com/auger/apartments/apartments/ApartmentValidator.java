@@ -1,5 +1,6 @@
 package com.auger.apartments.apartments;
 
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.auger.apartments.users.UserService;
@@ -69,6 +70,25 @@ public class ApartmentValidator {
     public void verifyRenterExists(Integer renterId) {
         if(renterId != null && !userService.doesExist(renterId)) {
             throw new UserNotFoundException(String.format("User with id %s does not exist", renterId));
+        }
+    }
+
+    public void validateApartmentDeletion(int apartmentId) {
+        verifyApartmentIsVacant(apartmentId);
+    }
+
+    private void verifyApartmentIsVacant(int apartmentId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM apartments
+                WHERE id = ?
+                AND renter_id IS NOT NULL;
+                """;
+        int occupiedApartments = jdbcTemplate.queryForObject(sql, Integer.class, apartmentId);
+        if (occupiedApartments > 0) {
+            throw new DeleteApartmentException(String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, apartmentId));
         }
     }
 }

@@ -45,4 +45,10 @@ public class ApartmentController {
         apartmentService.updateApartment(apartment);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteApartment(@PathVariable int id) {
+        apartmentService.deleteApartment(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

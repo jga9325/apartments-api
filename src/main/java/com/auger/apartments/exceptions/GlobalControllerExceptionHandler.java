@@ -32,4 +32,9 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<String> handleApplicationNotFoundException(ApplicationNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(DeleteApartmentException.class)
+    public ResponseEntity<String> handleDeleteApartmentException(DeleteApartmentException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }

@@ -1,6 +1,7 @@
 package com.auger.apartments.apartments;
 
 import com.auger.apartments.exceptions.ApartmentNotFoundException;
+import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -286,5 +287,56 @@ public class ApartmentServiceImplUnitTests {
         verify(apartmentRepository, times(1)).exists(nonExistingApartmentId);
 
         assertThat(underTest.doesExist(null)).isFalse();
+    }
+
+    @Test
+    public void testDeleteApartment() {
+        int unoccupiedApartmentId = 1;
+
+        when(apartmentRepository.exists(unoccupiedApartmentId)).thenReturn(true);
+        doNothing().when(apartmentValidator).validateApartmentDeletion(unoccupiedApartmentId);
+        doNothing().when(apartmentRepository).delete(unoccupiedApartmentId);
+
+        assertThatNoException().isThrownBy(() -> underTest.deleteApartment(unoccupiedApartmentId));
+
+        verify(apartmentRepository, times(1)).exists(unoccupiedApartmentId);
+        verify(apartmentValidator, times(1)).validateApartmentDeletion(unoccupiedApartmentId);
+        verify(apartmentRepository, times(1)).delete(unoccupiedApartmentId);
+    }
+
+    @Test
+    public void testDeleteApartmentInvalidId() {
+        int invalidApartmentId = 2;
+
+        when(apartmentRepository.exists(invalidApartmentId)).thenReturn(false);
+
+        assertThatThrownBy(() -> underTest.deleteApartment(invalidApartmentId))
+                .isInstanceOf(ApartmentNotFoundException.class)
+                .hasMessage(String.format("Apartment with id %s does not exist", invalidApartmentId));
+
+        verify(apartmentRepository, times(1)).exists(invalidApartmentId);
+        verify(apartmentValidator, times(0)).validateApartmentDeletion(invalidApartmentId);
+        verify(apartmentRepository, times(0)).delete(invalidApartmentId);
+    }
+
+    @Test
+    public void testDeleteApartmentOccupiedApartment() {
+        int occupiedApartment = 3;
+
+        when(apartmentRepository.exists(occupiedApartment)).thenReturn(true);
+        doThrow(new DeleteApartmentException(String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, occupiedApartment)))
+                .when(apartmentValidator).validateApartmentDeletion(occupiedApartment);
+
+        assertThatThrownBy(() -> underTest.deleteApartment(occupiedApartment))
+                .isInstanceOf(DeleteApartmentException.class)
+                .hasMessage(String.format("""
+                    Unable to delete apartment with id %s because it is occupied
+                    """, occupiedApartment));
+
+        verify(apartmentRepository, times(1)).exists(occupiedApartment);
+        verify(apartmentValidator, times(1)).validateApartmentDeletion(occupiedApartment);
+        verify(apartmentRepository, times(0)).delete(occupiedApartment);
     }
 }
