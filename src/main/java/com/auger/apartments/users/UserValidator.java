@@ -2,12 +2,15 @@ package com.auger.apartments.users;
 
 import com.auger.apartments.exceptions.DeleteUserException;
 import com.auger.apartments.exceptions.DuplicateDataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserValidator.class);
     private final JdbcTemplate jdbcTemplate;
 
     public UserValidator(JdbcTemplate jdbcTemplate) {
@@ -15,13 +18,17 @@ public class UserValidator {
     }
 
     public void validateNewUser(User user) {
+        logger.info("Validating new user");
         verifyUniqueEmailForNewUser(user.email());
         verifyUniquePhoneNumberForNewUser(user.phoneNumber());
+        logger.info("Validation complete");
     }
 
     public void validateExistingUser(User user) {
+        logger.info("Validating existing user");
         verifyUniqueEmailForExistingUser(user.id(), user.email());
         verifyUniquePhoneNumberForExistingUser(user.id(), user.phoneNumber());
+        logger.info("Validation complete");
     }
 
     public void verifyUniqueEmailForNewUser(String email) {
@@ -75,8 +82,10 @@ public class UserValidator {
     }
 
     public void validateUserDeletion(int id) {
+        logger.info("Validating user can be deleted");
         verifyUserIsNotRenting(id);
         verifyOwnedApartmentsAreVacant(id);
+        logger.info("Validation complete");
     }
 
     private void verifyUserIsNotRenting(int id) {

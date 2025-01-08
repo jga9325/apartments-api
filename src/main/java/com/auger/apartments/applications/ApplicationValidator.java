@@ -4,11 +4,14 @@ import com.auger.apartments.apartments.ApartmentService;
 import com.auger.apartments.exceptions.ApartmentNotFoundException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.auger.apartments.users.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApplicationValidator {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationValidator.class);
     private final UserService userService;
     private final ApartmentService apartmentService;
 
@@ -18,8 +21,10 @@ public class ApplicationValidator {
     }
 
     public void validateNewApplication(Application application) {
+        logger.info("Validating new application");
         verifyUserExists(application.userId());
         verifyApartmentExists(application.apartmentId());
+        logger.info("Validation complete");
     }
 
     public void verifyUserExists(int userId) {
