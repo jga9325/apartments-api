@@ -1,6 +1,6 @@
 package com.auger.apartments.apartments;
 
-import com.auger.apartments.BaseIntegrationTest;
+import com.auger.apartments.IntegrationTest;
 import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-public class ApartmentValidatorIntegrationTests extends BaseIntegrationTest {
+public class ApartmentValidatorIntegrationTests extends IntegrationTest {
 
     @Autowired
     ApartmentValidator underTest;

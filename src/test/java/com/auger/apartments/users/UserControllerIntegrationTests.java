@@ -1,6 +1,6 @@
 package com.auger.apartments.users;
 
-import com.auger.apartments.BaseControllerIntegrationTest;
+import com.auger.apartments.ControllerIntegrationTest;
 import com.auger.apartments.apartments.Apartment;
 import com.auger.apartments.applications.Application;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UserControllerIntegrationTests extends BaseControllerIntegrationTest {
+public class UserControllerIntegrationTests extends ControllerIntegrationTest {
 
     private User user1;
     private User user2;

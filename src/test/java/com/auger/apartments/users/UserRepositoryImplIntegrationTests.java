@@ -1,6 +1,6 @@
 package com.auger.apartments.users;
 
-import com.auger.apartments.BaseIntegrationTest;
+import com.auger.apartments.IntegrationTest;
 import com.auger.apartments.apartments.Apartment;
 import com.auger.apartments.applications.Application;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static com.auger.apartments.TestUtils.assertUsersAreEqual;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UserRepositoryImplIntegrationTests extends BaseIntegrationTest {
+public class UserRepositoryImplIntegrationTests extends IntegrationTest {
 
     @Autowired
     UserRepositoryImpl underTest;
