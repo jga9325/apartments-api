@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -58,5 +59,12 @@ public class GlobalControllerExceptionHandler {
         String line2 = "The specified user does not meet the requirements for deletion.";
         logger.error("{} {}", line1, line2, ex);
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        String[] messageParts = ex.getMessage().split(":");
+        String responseMessage = messageParts[messageParts.length-1].strip();
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 }
