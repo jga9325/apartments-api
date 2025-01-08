@@ -4,12 +4,15 @@ import com.auger.apartments.exceptions.DeleteApartmentException;
 import com.auger.apartments.exceptions.DuplicateDataException;
 import com.auger.apartments.exceptions.UserNotFoundException;
 import com.auger.apartments.users.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApartmentValidator {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApartmentValidator.class);
     private final JdbcTemplate jdbcTemplate;
     private final UserService userService;
 
@@ -19,15 +22,19 @@ public class ApartmentValidator {
     }
 
     public void validateNewApartment(Apartment apartment) {
+        logger.info("Validating new apartment");
         verifyOwnerExists(apartment.ownerId());
         verifyRenterExists(apartment.renterId());
         verifyUniqueRenterForNewApartment(apartment.renterId());
+        logger.info("Validation complete");
     }
 
     public void validateExistingApartment(Apartment apartment) {
+        logger.info("Validating existing apartment");
         verifyOwnerExists(apartment.ownerId());
         verifyRenterExists(apartment.renterId());
         verifyUniqueRenterForExistingApartment(apartment.id(), apartment.renterId());
+        logger.info("Validation complete");
     }
 
     public void verifyUniqueRenterForNewApartment(Integer renterId) {
@@ -74,7 +81,9 @@ public class ApartmentValidator {
     }
 
     public void validateApartmentDeletion(int apartmentId) {
+        logger.info("Validating apartment can be deleted");
         verifyApartmentIsVacant(apartmentId);
+        logger.info("Validation complete");
     }
 
     private void verifyApartmentIsVacant(int apartmentId) {
