@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Provides methods to validate that a user meets database and business constraints before
+ * executing database operations such as creating, updating, and deleting users.
+ */
 @Component
 public class UserValidator {
 

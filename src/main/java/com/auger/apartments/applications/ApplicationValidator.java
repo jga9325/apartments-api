@@ -8,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Provides methods to validate that an application meets database and business constraints before
+ * executing database operations such as creating, updating, and deleting applications.
+ */
 @Component
 public class ApplicationValidator {
 

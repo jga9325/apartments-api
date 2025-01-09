@@ -55,12 +55,9 @@ public class ApartmentControllerIntegrationTests extends ControllerIntegrationTe
                 2, "HI", "Honolulu", 400, 280000,
                 null, true, user1.id(), null);
 
-        apartment1 = testRestTemplate.postForEntity("/apartments", apt1, Apartment.class)
-                .getBody();
-        apartment2 = testRestTemplate.postForEntity("/apartments", apt2, Apartment.class)
-                .getBody();
-        apartment3 = testRestTemplate.postForEntity("/apartments", apt3, Apartment.class)
-                .getBody();
+        apartment1 = testRestTemplate.postForEntity("/apartments", apt1, Apartment.class).getBody();
+        apartment2 = testRestTemplate.postForEntity("/apartments", apt2, Apartment.class).getBody();
+        apartment3 = testRestTemplate.postForEntity("/apartments", apt3, Apartment.class).getBody();
     }
 
     @AfterEach

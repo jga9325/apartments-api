@@ -2,6 +2,17 @@ package com.auger.apartments.users;
 
 import java.time.LocalDate;
 
+/**
+ * Represents a user
+ *
+ * @param id
+ * @param firstName
+ * @param lastName
+ * @param email must be unique
+ * @param phoneNumber must be unique
+ * @param birthDate
+ * @param dateJoined
+ */
 public record User(Integer id,
                    String firstName,
                    String lastName,
@@ -13,31 +24,22 @@ public record User(Integer id,
     public User {
         if (firstName == null) {
             throw new IllegalArgumentException("First name must be provided");
-        }
-
-        if (lastName == null) {
+        } else if (lastName == null) {
             throw new IllegalArgumentException("Last name must be provided");
-        }
-
-        if (email == null) {
+        } else if (email == null) {
             throw new IllegalArgumentException("A valid email must be provided");
-        }
-
-        if (phoneNumber == null) {
+        } else if (phoneNumber == null) {
             throw new IllegalArgumentException("A valid phone number must be provided");
+        } else if (phoneNumber.length() != 10) {
+            throw new IllegalArgumentException("Phone number must be in the format 1234567890");
+        } else if (birthDate == null) {
+            throw new IllegalArgumentException("A valid birth date must be provided");
         }
 
-        if (phoneNumber.length() != 10) {
-            throw new IllegalArgumentException("Phone number must be in the format 1234567890");
-        }
         for (int i = 0; i < phoneNumber.length(); i++) {
             if (!Character.isDigit(phoneNumber.charAt(i))) {
                 throw new IllegalArgumentException("Phone number must be in the format 1234567890");
             }
-        }
-
-        if (birthDate == null) {
-            throw new IllegalArgumentException("A valid birth date must be provided");
         }
 
         LocalDate earliestDate = LocalDate.now().minusYears(100);

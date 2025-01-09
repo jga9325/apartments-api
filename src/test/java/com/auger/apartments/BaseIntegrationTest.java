@@ -7,6 +7,11 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * Base test class that can be extended by other base classes or tests.
+ * Provides a PostgreSQLContainer instance that can be shared among all integration tests
+ * and a JDBCTemplate bean.
+ */
 public abstract class BaseIntegrationTest {
 
     static PostgreSQLContainer<?> postgres =
@@ -25,5 +30,4 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-
 }
