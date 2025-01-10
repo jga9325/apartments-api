@@ -24,36 +24,38 @@ However, this process takes only a few simple steps thanks to Docker Compose.
 
 ### Steps
 1. Either clone or fork this repo to obtain a copy on your local machine
-2. Run the Docker Desktop application
-3. Navigate to the root repository of the project and enter the command `docker compose -f compose.yaml up` 
-   in the command prompt/terminal
-4. Once the application is running, you are able to send requests. For convenience, a Postman collection
+2. Navigate to the root repository of the project and open a command prompt/terminal
+3. Enter the command `.\mvnw clean install` to install a JAR file in the target directory
+4. Run the Docker Desktop application
+5. Enter the command `docker compose -f compose.yaml up` to start the project
+6. Once the project is running, you are able to send requests. For convenience, a Postman collection
    is provided in the file `postman_collection` in the root of the repository. Simply import this as a
    collection in Postman in order to have access to all the available requests. Additionally, complete
    documentation for all endpoints is listed below.
-5. To view objects in the Postgres database, navigate to `http://localhost:80` to access
+7. To view objects in the Postgres database, navigate to `http://localhost:80` to access
    a running instance of pgAdmin. Directions for logging in are below.
 
 ## pgAdmin Login
 
-1. Navigate to `http://localhost:80`
-2. You should see the login box shown in the image below. Login with the following credentials:
+1. Follow the steps above to run the application
+2. Navigate to `http://localhost:80`
+3. You should see the login box shown in the image below. Login with the following credentials:
    - Email Address / Username: `admin@domain.com`
    - Password: `password`
 
 ![A pgAdmin login box. There are two fields, one for Email Address / Username 
 and another for Password](images/pgAdmin-login.jpg)
 
-3. Click on `Add New Server`
+4. Click on `Add New Server`
 
 ![A button that says "Add New Server" with a red square surrounding it](images/add-new-server.jpg)
 
-4. Under the `General` tab, add any name for the server to the `Name` field
+5. Under the `General` tab, add any name for the server to the `Name` field
 
 ![A popup box titled "Register Server" with several fields to enter data, including a field for a server 
 name](images/register-server-1.jpg)
 
-5. Under the `Connection` tab, fill out the following fields:
+6. Under the `Connection` tab, fill out the following fields:
    - Host name/address: `postgresdb`
    - Port: `5432`
    - Maintenance database: `apartments-app`
@@ -62,8 +64,8 @@ name](images/register-server-1.jpg)
 
 ![A popup box titled "Register Server" with several fields to enter](images/register-server-2.jpg)
 
-6. Click `Save`
-7. On the left hand side of the page the server wil be created. Open the server and navigate to 
+7. Click `Save`
+8. On the left hand side of the page the server wil be created. Open the server and navigate to 
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
    and applications.
 
@@ -79,7 +81,7 @@ Create a new user.
 
 Endpoint: `POST` /users
 
-Body: User
+**Body: User**
 ```
 {
     "id": null,
@@ -158,7 +160,7 @@ Endpoint: `GET` /users
 **Response Codes**
 - `200` - retrieved successfully
 
-**Response: List<User>**
+**Response: List**
 ```
 [
     {
@@ -188,7 +190,7 @@ Update a user
 
 Endpoint: `PUT` /users
 
-Body: User
+**Body: User**
 ```
 {
     "id": 1,
