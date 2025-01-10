@@ -73,13 +73,13 @@ The base url for all requests is `http://localhost`
 
 ## Users
 
-### `POST` Create User
+### Create User
 
 Create a new user.
 
-Endpoint: `POST /users`
+Endpoint: `POST` /users
 
-Body:
+Body: User
 ```
 {
     "id": null,
@@ -111,7 +111,7 @@ Body:
 - `201` - created successfully
 - `409` - there is a conflict between the provided attributes and existing data
 
-**Response - User**
+**Response: User**
 ```
 {
     "id": 1,
@@ -124,11 +124,11 @@ Body:
 }
 ```
 
-### Get User `GET`
+### Get User
 
 Retrieve a user by id
 
-Endpoint: `GET /users/:id`
+Endpoint: `GET` /users/:id
 
 Example: `/users/1`
 
@@ -136,7 +136,7 @@ Example: `/users/1`
 - `200` - retrieved successfully
 - `404` - user id is invalid
 
-**Response - User**
+**Response: User**
 ```
 {
     "id": 1,
@@ -158,7 +158,7 @@ Endpoint: `GET` /users
 **Response Codes**
 - `200` - retrieved successfully
 
-**Response - List<User>**
+**Response: List<User>**
 ```
 [
     {
@@ -186,9 +186,9 @@ Endpoint: `GET` /users
 
 Update a user
 
-Endpoint: `PUT /users`
+Endpoint: `PUT` /users
 
-Body:
+Body: User
 ```
 {
     "id": 1,
@@ -221,13 +221,13 @@ Body:
 - `404` - user id is invalid
 - `409` - there is a conflict between the provided attributes and existing data
 
-**Response - void**
+**Response: Void**
 
 ### Delete User
 
 Delete a user
 
-Endpoint: `DELETE /users/:id`
+Endpoint: `DELETE` /users/:id
 
 Example: `/users/1`
 
@@ -236,4 +236,4 @@ Example: `/users/1`
 - `404` - user id is invalid
 - `409` - user does not meet the requirements for deletion
 
-**Response - void**
+**Response: Void**
