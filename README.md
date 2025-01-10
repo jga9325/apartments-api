@@ -69,15 +69,29 @@ name](images/register-server-1.jpg)
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
    and applications.
 
+
 # Apartments API Reference
 
 The base url for all requests is `http://localhost`
+
+### HTTP Status Code Summary
+```
+200         OK                      Everything worked as expected
+201         Created                 Creation was successful
+204         No Content              Success with no response
+
+400         Bad Request             Invalid attribute/s provided
+404         Not Found               Invalid id/s provided
+409         Conflict                Attribute/s conflict with existing data
+
+500         Internal Server Error   Something went wrong when accessing the database
+```
 
 ## Users
 
 ### Create User
 
-Create a new user.
+Create a new user
 
 Endpoint: `POST` /users
 
@@ -96,18 +110,18 @@ Endpoint: `POST` /users
 
 ### Attributes
 - **id**: integer or null
-   - User id is assigned by the application so null is fine
+   - id is assigned by the application so null is acceptable
 - **firstName**: string
 - **lastName**: string
 - **email**: string
-   - Must be unique
+   - must be unique
 - **phoneNumber**: string
-   - Must be 10 digits with no spaces or dashes ex. 1234567890
-   - Must be unique
+   - must be 10 digits with no spaces or dashes ex. 1234567890
+   - must be unique
 - **birthDate**: date
-   - User must be between 18 and 100 years of age
+   - user must be between 18 and 100 years of age
 - **dateJoined**: date
-   - This value will be set by the application so null is fine
+   - this value will be set by the application so null is acceptable
 
 **Response Codes**
 - `201` - created successfully
@@ -205,21 +219,21 @@ Endpoint: `PUT` /users
 
 ### Attributes
 - **id**: integer
-   - Must be the id of an existing user
+   - must reference an existing user
 - **firstName**: string
 - **lastName**: string
 - **email**: string
-   - Must be unique
+   - must be unique
 - **phoneNumber**: string
-   - Must be 10 digits with no spaces or dashes ex. 1234567890
-   - Must be unique
+   - must be 10 digits with no spaces or dashes ex. 1234567890
+   - must be unique
 - **birthDate**: date
-   - User must be between 18 and 100 years of age
+   - user must be between 18 and 100 years of age
 - **dateJoined**: date
-   - This value won't be updated so null is fine
+   - this value won't be updated so null is acceptable
 
 **Response Codes**
-- `204` - created successfully
+- `204` - updated successfully
 - `404` - user id is invalid
 - `409` - there is a conflict between the provided attributes and existing data
 
@@ -237,5 +251,381 @@ Example: `/users/1`
 - `204` - deleted successfully
 - `404` - user id is invalid
 - `409` - user does not meet the requirements for deletion
+
+**Response: Void**
+
+## Apartments
+
+### Create Apartment
+
+Create a new apartment
+
+Endpoint: `POST` /apartments
+
+**Body: Apartment**
+```
+{
+    "id": null,
+    "title": "Main Street Condo",
+    "description": "A spacious condo with brand new appliances and great views!",
+    "numberOfBedrooms": 2,
+    "numberOfBathrooms": 1,
+    "state": "NY",
+    "city": "New York",
+    "squareFeet": 800,
+    "monthlyRent": 608900,
+    "dateListed": null,
+    "available": true,
+    "ownerId": 1,
+    "renterId": null
+}
+```
+
+### Attributes
+- **id**: integer or null
+    - id is assigned by the application so null is acceptable
+- **title**: string
+- **description**: string
+- **numberOfBedrooms**: integer
+    - must be positive
+- **numberOfBathrooms**: integer
+    - must be positive
+- **state**: string
+- **city**: string
+- **squareFeet**: integer
+    - must be positive
+- **monthlyRent**: integer
+    - represented in cents (ex. $1200.00 should be passed in as 120000)
+    - must be positive
+- **dateListed**: date
+    - this value will be set by the application so null is acceptable
+- **available**: boolean
+- **ownerId**: integer
+    - must reference an existing user
+- **renterId**: integer or null
+    - must reference an existing user or null for an unoccupied apartment
+
+**Response Codes**
+- `201` - created successfully
+- `409` - there is a conflict between the provided attributes and existing data
+
+**Response: Apartment**
+```
+{
+    "id": 1,
+    "title": "Main Street Condo",
+    "description": "A spacious condo with brand new appliances and great views!",
+    "numberOfBedrooms": 2,
+    "numberOfBathrooms": 1,
+    "state": "NY",
+    "city": "New York",
+    "squareFeet": 800,
+    "monthlyRent": 608900,
+    "dateListed": "2025-01-10",
+    "available": true,
+    "ownerId": 1,
+    "renterId": null
+}
+```
+
+### Get Apartment
+
+Retrieve an apartment by id
+
+Endpoint: `GET` /apartments/:id
+
+Example: `/apartments/1`
+
+**Response Codes**
+- `200` - retrieved successfully
+- `404` - apartment id is invalid
+
+**Response: Apartment**
+```
+{
+    "id": 1,
+    "title": "Main Street Condo",
+    "description": "A spacious condo with brand new appliances and great views!",
+    "numberOfBedrooms": 2,
+    "numberOfBathrooms": 1,
+    "state": "NY",
+    "city": "New York",
+    "squareFeet": 800,
+    "monthlyRent": 608900,
+    "dateListed": "2025-01-10",
+    "available": true,
+    "ownerId": 1,
+    "renterId": null
+}
+```
+
+### Get All Apartments
+
+Retrieve a list of all apartments
+
+Endpoint: `GET` /apartments
+
+**Response Codes**
+- `200` - retrieved successfully
+
+**Response: List**
+```
+[
+    {
+        "id": 1,
+        "title": "Main Street Condo",
+        "description": "A spacious condo with brand new appliances and great views!",
+        "numberOfBedrooms": 2,
+        "numberOfBathrooms": 1,
+        "state": "NY",
+        "city": "New York",
+        "squareFeet": 800,
+        "monthlyRent": 608900,
+        "dateListed": "2025-01-10",
+        "available": true,
+        "ownerId": 1,
+        "renterId": null
+    },
+    {
+        "id": 2,
+        "title": "Beach Stay",
+        "description": "Secluded home, perfect for a quiet and relaxing getaway.",
+        "numberOfBedrooms": 2,
+        "numberOfBathrooms": 2,
+        "state": "HI",
+        "city": "Honolulu",
+        "squareFeet": 1500,
+        "monthlyRent": 280000,
+        "dateListed": "2025-01-10",
+        "available": true,
+        "ownerId": 1,
+        "renterId": null
+    }
+]
+```
+
+### Update Apartment
+
+Update an apartment
+
+Endpoint: `PUT` /apartments
+
+**Body: Apartment**
+```
+{
+    "id": 1,
+    "title": "Main Street Condo",
+    "description": "Great location and insane views!",
+    "numberOfBedrooms": 2,
+    "numberOfBathrooms": 1,
+    "state": "NY",
+    "city": "New York",
+    "squareFeet": 800,
+    "monthlyRent": 645000,
+    "dateListed": null,
+    "available": true,
+    "ownerId": 1,
+    "renterId": null
+}
+```
+
+### Attributes
+- **id**: integer
+    - must reference an existing apartment
+- **title**: string
+- **description**: string
+- **numberOfBedrooms**: integer
+    - must be positive
+- **numberOfBathrooms**: integer
+    - must be positive
+- **state**: string
+- **city**: string
+- **squareFeet**: integer
+    - must be positive
+- **monthlyRent**: integer
+    - represented in cents (ex. $1200.00 should be passed in as 120000)
+    - must be positive
+- **dateListed**: date
+    - this value won't be updated so null is acceptable
+- **available**: boolean
+- **ownerId**: integer
+    - must reference an existing user
+- **renterId**: integer or null
+    - must reference an existing user or null for an unoccupied apartment
+
+**Response Codes**
+- `204` - updated successfully
+- `404` - apartment id is invalid
+- `409` - there is a conflict between the provided attributes and existing data
+
+**Response: Void**
+
+### Delete Apartment
+
+Delete an apartment
+
+Endpoint: `DELETE` /apartments/:id
+
+Example: `/apartments/1`
+
+**Response Codes**
+- `204` - deleted successfully
+- `404` - apartment id is invalid
+- `409` - apartment does not meet the requirements for deletion
+
+**Response: Void**
+
+## Applications
+
+### Create Application
+
+Create a new application
+
+Endpoint: `POST` /applications
+
+**Body: Application**
+```
+{
+    "id": null,
+    "dateSubmitted": null,
+    "active": true,
+    "successful": false,
+    "userId": 1,
+    "apartmentId": 1
+}
+```
+
+### Attributes
+- **id**: integer or null
+    - id is assigned by the application so null is acceptable
+- **dateSubmitted**: date
+    - this value will be set by the application so null is acceptable
+- **active**: boolean
+- **successful**: boolean
+- **userId**: integer
+    - must reference an existing user
+- **apartmentId**: integer
+    - must reference an existing apartment
+
+**Response Codes**
+- `201` - created successfully
+- `409` - there is a conflict between the provided attributes and existing data
+
+**Response: Application**
+```
+{
+    "id": 1,
+    "dateSubmitted": "2025-01-10",
+    "active": true,
+    "successful": false,
+    "userId": 1,
+    "apartmentId": 1
+}
+```
+
+### Get Application
+
+Retrieve an application by id
+
+Endpoint: `GET` /applications/:id
+
+Example: `/applications/1`
+
+**Response Codes**
+- `200` - retrieved successfully
+- `404` - application id is invalid
+
+**Response: Application**
+```
+{
+    "id": 1,
+    "dateSubmitted": "2025-01-10",
+    "active": true,
+    "successful": false,
+    "userId": 1,
+    "apartmentId": 1
+}
+```
+
+### Get All Applications
+
+Retrieve a list of all applications
+
+Endpoint: `GET` /applications
+
+**Response Codes**
+- `200` - retrieved successfully
+
+**Response: List**
+```
+[
+    {
+        "id": 1,
+        "dateSubmitted": "2025-01-10",
+        "active": true,
+        "successful": false,
+        "userId": 1,
+        "apartmentId": 1
+    },
+    {
+        "id": 2,
+        "dateSubmitted": "2025-01-10",
+        "active": true,
+        "successful": false,
+        "userId": 2,
+        "apartmentId": 1
+    }
+]
+```
+
+### Update Application
+
+Update an application
+
+Endpoint: `PUT` /applications
+
+**Body: Application**
+```
+{
+    "id": 1,
+    "dateSubmitted": null,
+    "active": false,
+    "successful": true,
+    "userId": 1,
+    "apartmentId": 1
+}
+```
+
+### Attributes
+- **id**: integer
+    - must reference an existing application
+- **dateSubmitted**: date
+    - this value won't be updated so null is acceptable
+- **active**: boolean
+- **successful**: boolean
+- **userId**: integer
+    - this value won't be updated so any integer is acceptable
+- **apartmentId**: integer
+    - this value won't be updated so any integer is acceptable
+
+**Response Codes**
+- `204` - updated successfully
+- `404` - application id is invalid
+- `409` - there is a conflict between the provided attributes and existing data
+
+**Response: Void**
+
+### Delete Application
+
+Delete an application
+
+Endpoint: `DELETE` /applications/:id
+
+Example: `/applications/1`
+
+**Response Codes**
+- `204` - deleted successfully
+- `404` - application id is invalid
+- `409` - application does not meet the requirements for deletion
 
 **Response: Void**
