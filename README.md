@@ -25,8 +25,8 @@ However, this process takes only a few simple steps thanks to Docker Compose.
 ### Steps
 1. Either clone or fork this repo to obtain a copy on your local machine
 2. Navigate to the root repository of the project and open a command prompt/terminal
-3. Enter the command `.\mvnw clean install` to install a JAR file in the target directory
-4. Run the Docker Desktop application
+3. Run the Docker Desktop application
+4. Enter the command `.\mvnw clean install` to install a JAR file in the target directory
 5. Enter the command `docker compose -f compose.yaml up` to start the project
 6. Once the project is running, you are able to send requests. For convenience, a Postman collection
    is provided in the file `postman_collection` in the root of the repository. Simply import this as a
