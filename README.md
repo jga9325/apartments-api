@@ -67,7 +67,12 @@ name](images/register-server-1.jpg)
 7. Click `Save`
 8. On the left hand side of the page the server wil be created. Open the server and navigate to 
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
-   and applications.  
+   and applications.
+
+
+
+
+
 
 
 # Apartments API Reference
