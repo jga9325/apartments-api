@@ -60,6 +60,8 @@ name](images/register-server-1.jpg)
    - Username: `username`
    - Password: `password`
 
+![A popup box titled "Register Server" with several fields to enter](images/register-server-2.jpg)
+
 6. Click `Save`
 7. On the left hand side of the page the server wil be created. Open the server and navigate to 
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
@@ -71,7 +73,7 @@ The base url for all requests is `http://localhost`
 
 ## Users
 
-### Create User
+### `POST` Create User
 
 Create a new user.
 
@@ -79,8 +81,6 @@ Endpoint: `POST /users`
 
 Body:
 ```
-User Object
-
 {
     "id": null,
     "firstName": "John",
@@ -92,7 +92,7 @@ User Object
 }
 ```
 
-Attributes
+### Attributes
 - **id**: integer or null
    - User id is assigned by the application so null is fine
 - **firstName**: string
@@ -107,14 +107,12 @@ Attributes
 - **dateJoined**: date
    - This value will be set by the application so null is fine
 
-Response Codes
+**Response Codes**
 - `201` - created successfully
 - `409` - there is a conflict between the provided attributes and existing data
 
-Response - User
+**Response - User**
 ```
-User Object
-
 {
     "id": 1,
     "firstName": "John",
@@ -126,7 +124,7 @@ User Object
 }
 ```
 
-### Get User
+### Get User `GET`
 
 Retrieve a user by id
 
@@ -134,14 +132,12 @@ Endpoint: `GET /users/:id`
 
 Example: `/users/1`
 
-Response Codes
+**Response Codes**
 - `200` - retrieved successfully
 - `404` - user id is invalid
 
-Response - User
+**Response - User**
 ```
-User Object
-
 {
     "id": 1,
     "firstName": "John",
@@ -157,15 +153,13 @@ User Object
 
 Retrieve a list of all users
 
-Endpoint: `GET /users`
+Endpoint: `GET` /users
 
-Response Codes
+**Response Codes**
 - `200` - retrieved successfully
 
-Response - List<User>
+**Response - List<User>**
 ```
-User List
-
 [
     {
         "id": 1,
@@ -196,8 +190,6 @@ Endpoint: `PUT /users`
 
 Body:
 ```
-User Object
-
 {
     "id": 1,
     "firstName": "John",
@@ -209,7 +201,7 @@ User Object
 }
 ```
 
-Attributes
+### Attributes
 - **id**: integer
    - Must be the id of an existing user
 - **firstName**: string
@@ -224,12 +216,12 @@ Attributes
 - **dateJoined**: date
    - This value won't be updated so null is fine
 
-Response Codes
+**Response Codes**
 - `204` - created successfully
 - `404` - user id is invalid
 - `409` - there is a conflict between the provided attributes and existing data
 
-Response - void
+**Response - void**
 
 ### Delete User
 
@@ -239,9 +231,9 @@ Endpoint: `DELETE /users/:id`
 
 Example: `/users/1`
 
-Response Codes
+**Response Codes**
 - `204` - deleted successfully
 - `404` - user id is invalid
 - `409` - user does not meet the requirements for deletion
 
-Response - void
+**Response - void**
