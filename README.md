@@ -67,7 +67,7 @@ name](images/register-server-1.jpg)
 7. Click `Save`
 8. On the left hand side of the page the server wil be created. Open the server and navigate to 
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
-   and applications.
+   and applications.  
 
 
 # Apartments API Reference
@@ -110,7 +110,7 @@ Endpoint: `POST` /users
 
 ### Attributes
 - **id**: integer or null
-   - id is assigned by the application so null is acceptable
+   - assigned by the application so null is acceptable
 - **firstName**: string
 - **lastName**: string
 - **email**: string
@@ -121,7 +121,7 @@ Endpoint: `POST` /users
 - **birthDate**: date
    - user must be between 18 and 100 years of age
 - **dateJoined**: date
-   - this value will be set by the application so null is acceptable
+   - assigned by the application so null is acceptable
 
 **Response Codes**
 - `201` - created successfully
@@ -230,7 +230,7 @@ Endpoint: `PUT` /users
 - **birthDate**: date
    - user must be between 18 and 100 years of age
 - **dateJoined**: date
-   - this value won't be updated so null is acceptable
+   - will not be updated so null is acceptable
 
 **Response Codes**
 - `204` - updated successfully
@@ -283,7 +283,7 @@ Endpoint: `POST` /apartments
 
 ### Attributes
 - **id**: integer or null
-    - id is assigned by the application so null is acceptable
+    - assigned by the application so null is acceptable
 - **title**: string
 - **description**: string
 - **numberOfBedrooms**: integer
@@ -298,7 +298,7 @@ Endpoint: `POST` /apartments
     - represented in cents (ex. $1200.00 should be passed in as 120000)
     - must be positive
 - **dateListed**: date
-    - this value will be set by the application so null is acceptable
+    - assigned by the application so null is acceptable
 - **available**: boolean
 - **ownerId**: integer
     - must reference an existing user
@@ -446,7 +446,7 @@ Endpoint: `PUT` /apartments
     - represented in cents (ex. $1200.00 should be passed in as 120000)
     - must be positive
 - **dateListed**: date
-    - this value won't be updated so null is acceptable
+    - will not be updated so null is acceptable
 - **available**: boolean
 - **ownerId**: integer
     - must reference an existing user
@@ -497,9 +497,9 @@ Endpoint: `POST` /applications
 
 ### Attributes
 - **id**: integer or null
-    - id is assigned by the application so null is acceptable
+    - assigned by the application so null is acceptable
 - **dateSubmitted**: date
-    - this value will be set by the application so null is acceptable
+    - assigned by the application so null is acceptable
 - **active**: boolean
 - **successful**: boolean
 - **userId**: integer
@@ -600,13 +600,13 @@ Endpoint: `PUT` /applications
 - **id**: integer
     - must reference an existing application
 - **dateSubmitted**: date
-    - this value won't be updated so null is acceptable
+    - will not be updated so null is acceptable
 - **active**: boolean
 - **successful**: boolean
 - **userId**: integer
-    - this value won't be updated so any integer is acceptable
+    - will not be updated so any integer is acceptable
 - **apartmentId**: integer
-    - this value won't be updated so any integer is acceptable
+    - will not be updated so any integer is acceptable
 
 **Response Codes**
 - `204` - updated successfully
