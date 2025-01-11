@@ -646,12 +646,12 @@ Example: `/applications/1`
 The application is separated into three layers. The presentation layer consists of controller classes which handle
 incoming requests and direct them to the service layer. The service layer handles business logic such as data 
 validation and then calls the persistence layer. Additionally, most exceptions are thrown from the service layer.
-Lastly, the persistence layer executes SQL commands against a Postgres database.
+Lastly, the persistence layer executes SQL commands against a PostgreSQL database.
 
 ### Database
 
-This project uses a PostgreSQL database to store users, apartments, and applications. Additionally, an instance
-of pgAdmin is provided in order to view the database.
+A PostgreSQL database stores users, apartments, and applications. Additionally, an instance of pgAdmin is provided 
+in order to view the database.
 
 This project uses Spring JDBC to execute SQL commands against the database.
 
@@ -686,5 +686,5 @@ repeat code.
 ## Exception Handling
 
 The @ControllerAdvice annotation is used to create a global exception handler class which catches all exceptions 
-within the application. This class defines @ExceptionHandler methods for all possible exceptions that might be thrown. 
-Each method returns a Response Entity with an error message and an HTTP status code.
+thrown within the application. This class defines @ExceptionHandler methods for all possible exceptions that might be 
+thrown. Each method returns a Response Entity with an error message and an HTTP status code.
