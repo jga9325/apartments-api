@@ -69,12 +69,6 @@ name](images/register-server-1.jpg)
    `Databases > apartments-app > Schemas > Tables`. You will see three tables titled users, apartments, 
    and applications.
 
-
-
-
-
-
-
 # Apartments API Reference
 
 The base url for all requests is `http://localhost`
@@ -141,7 +135,7 @@ Endpoint: `POST` /users
     "email": "john@gmail.com",
     "phoneNumber": "1234567894",
     "birthDate": "1999-04-28",
-    "dateJoined": null
+    "dateJoined": "2025-01-10"
 }
 ```
 
@@ -166,7 +160,7 @@ Example: `/users/1`
     "email": "john@gmail.com",
     "phoneNumber": "1234567894",
     "birthDate": "1999-04-28",
-    "dateJoined": null
+    "dateJoined": "2025-01-10"
 }
 ```
 
@@ -634,3 +628,63 @@ Example: `/applications/1`
 - `409` - application does not meet the requirements for deletion
 
 **Response: Void**
+
+# Project Design and Technologies
+
+## Tech Stack
+- Java 17
+- Spring Boot 3.4
+- Maven
+- PostgreSQL
+- pgAdmin
+- Docker and Docker Compose
+- Testcontainers
+- SLF4J and Logback
+
+## Design
+
+The application is separated into three layers. The presentation layer consists of controller classes which handle
+incoming requests and direct them to the service layer. The service layer handles business logic such as data 
+validation and then calls the persistence layer. Additionally, most exceptions are thrown from the service layer.
+Lastly, the persistence layer executes SQL commands against a Postgres database.
+
+### Database
+
+This project uses a PostgreSQL database to store users, apartments, and applications. Additionally, an instance
+of pgAdmin is provided in order to view the database.
+
+This project uses Spring JDBC to execute SQL commands against the database.
+
+A schema.sql file is used to create three tables in the database. These tables are dropped and recreated with each
+run of the application, meaning that data does not persist between runs.
+
+### Docker
+
+A Dockerfile is used to Dockerize the application by importing a JAR file into a Java 17 image and executing it.
+
+Docker Compose is used to run PostgreSQL, pgAdmin, and the application itself in three separate containers which 
+run on the same Docker network.
+
+By utilizing this strategy, it eliminates the need for users of the project to have Java 17, PostgreSQL, and pgAdmin
+downloaded locally. The only requirement is to have Docker installed locally in order to run the application.
+
+### Testing
+
+This application includes 180 unit and integration tests to ensure expected functionality.
+
+Unit tests use JUnit, Mockito, and Spring Boot annotations to test individual methods.
+
+Integration tests utilize the Testcontainers project to access a PostgreSQL database, which allows tests to run against
+a database of the same type and version that is being used in the project. Using the Singleton pattern, a single 
+container is created and shared between all integration tests. This allows the integration test suite to run much more 
+efficiently than if a new container was used for each test class. TestRestTemplate is used to make HTTP requests to 
+controller methods and verify responses.
+
+Lastly, abstract base classes are used to provide common resources to integration tests that need them, reducing
+repeat code.
+
+## Exception Handling
+
+The @ControllerAdvice annotation is used to create a global exception handler class which catches all exceptions 
+within the application. This class defines @ExceptionHandler methods for all possible exceptions that might be thrown. 
+Each method returns a Response Entity with an error message and an HTTP status code.
