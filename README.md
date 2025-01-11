@@ -2,7 +2,7 @@
 
 ## Summary
 
-Backend implementation of a CRUD application that resembles an oversimplified Apartments.com.
+Backend implementation of a CRUD application that resembles a simplified Apartments.com.
 
 This project exposes API endpoints which allow clients to create, view, edit, and delete users, 
 apartments, and applications.
@@ -32,7 +32,7 @@ However, this process takes only a few simple steps thanks to Docker Compose.
    is provided in the file `postman_collection` in the root of the repository. Simply import this as a
    collection in Postman in order to have access to all the available requests. Additionally, complete
    documentation for all endpoints is listed below.
-7. To view objects in the Postgres database, navigate to `http://localhost:80` to access
+7. To view objects in the PostgreSQL database, navigate to `http://localhost:80` to access
    a running instance of pgAdmin. Directions for logging in are below.
 
 ## pgAdmin Login
@@ -636,10 +636,10 @@ Example: `/applications/1`
 - Spring Boot 3.4
 - Maven
 - PostgreSQL
-- pgAdmin
 - Docker and Docker Compose
 - Testcontainers
 - SLF4J and Logback
+- pgAdmin
 
 ## Design
 
@@ -683,7 +683,7 @@ controller methods and verify responses.
 Lastly, abstract base classes are used to provide common resources to integration tests that need them, reducing
 repeat code.
 
-## Exception Handling
+### Exception Handling
 
 The @ControllerAdvice annotation is used to create a global exception handler class which catches all exceptions 
 thrown within the application. This class defines @ExceptionHandler methods for all possible exceptions that might be 
