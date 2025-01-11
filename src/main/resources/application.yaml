@@ -3,9 +3,9 @@ spring:
     name: apartments
   datasource:
       driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/apartments-app
+      jdbc-url: jdbc:postgresql://postgresdb:5432/apartments-app
       username: username
-      password: "password"
+      password: password
       pool-size: 30
   sql:
     init:

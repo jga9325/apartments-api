@@ -1,4 +1,15 @@
 services:
+  apartments:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "postgres"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/apartments-app
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password
+
   postgres:
     image: postgres:17.2-alpine
     container_name: postgresdb
@@ -8,6 +19,7 @@ services:
       POSTGRES_DB: apartments-app
     ports:
       - "5432:5432"
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -16,3 +28,5 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - "80:80"
+    depends_on:
+      - "postgres"

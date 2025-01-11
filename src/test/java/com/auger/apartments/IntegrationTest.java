@@ -8,8 +8,13 @@ import com.auger.apartments.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * Base test class for all integration tests that don't test a controller class.
+ * Provides a connection to a Postgres database in a Testcontainer, a JDBCTemplate bean,
+ * and beans for common services and repositories.
+ */
 @SpringBootTest
-public class IntegrationTest extends BaseIntegrationTest {
+public abstract class IntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     protected UserService userService;
